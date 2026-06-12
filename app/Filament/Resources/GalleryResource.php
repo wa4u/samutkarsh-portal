@@ -58,6 +58,12 @@ class GalleryResource extends Resource
                     ->visible(fn () => ! auth()->user()?->isCenterHead())
                     ->default(fn () => auth()->user()?->center_id),
 
+                Forms\Components\TextInput::make('year')
+                    ->numeric()
+                    ->minValue(2000)->maxValue(2100)
+                    ->default((int) date('Y'))
+                    ->helperText('Year these photos are from — used for public filtering.'),
+
                 Forms\Components\Textarea::make('description')->columnSpanFull(),
 
                 Forms\Components\FileUpload::make('cover_image')
@@ -90,6 +96,7 @@ class GalleryResource extends Resource
                     ->getStateUsing(fn (Gallery $r) => $r->coverUrl())
                     ->height(48),
                 Tables\Columns\TextColumn::make('title')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('year')->sortable()->placeholder('—'),
                 Tables\Columns\TextColumn::make('center.name')
                     ->label('Center')->placeholder('Trust-wide')
                     ->visible(fn () => ! auth()->user()?->isCenterHead()),
@@ -101,6 +108,9 @@ class GalleryResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('approval_status')
                     ->options(['pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected']),
+                Tables\Filters\SelectFilter::make('center_id')
+                    ->relationship('center', 'name')
+                    ->visible(fn () => ! auth()->user()?->isCenterHead()),
             ])
             ->actions([
                 Tables\Actions\Action::make('approve')

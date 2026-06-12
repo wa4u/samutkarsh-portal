@@ -49,6 +49,16 @@ class PostResource extends Resource
                     ->visible(fn () => ! auth()->user()?->isCenterHead())
                     ->default(fn () => auth()->user()?->center_id),
 
+                Forms\Components\Select::make('category_id')
+                    ->relationship('category', 'name')
+                    ->label('Category')
+                    ->searchable()
+                    ->preload()
+                    // Trust Admin can add a category on the fly.
+                    ->createOptionForm(fn () => auth()->user()?->isTrustAdmin() ? [
+                        Forms\Components\TextInput::make('name')->required(),
+                    ] : null),
+
                 Forms\Components\Textarea::make('excerpt')
                     ->maxLength(500)
                     ->columnSpanFull(),
@@ -83,6 +93,7 @@ class PostResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')->searchable()->limit(50),
+                Tables\Columns\TextColumn::make('category.name')->badge()->placeholder('—'),
                 Tables\Columns\TextColumn::make('center.name')
                     ->label('Center')
                     ->placeholder('Trust-wide')
@@ -96,6 +107,8 @@ class PostResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options(['draft' => 'Draft', 'published' => 'Published']),
+                Tables\Filters\SelectFilter::make('category')
+                    ->relationship('category', 'name'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

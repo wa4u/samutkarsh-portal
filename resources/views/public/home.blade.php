@@ -37,4 +37,35 @@
             </div>
         @endforeach
     </section>
+
+    @if (($latestPosts ?? collect())->isNotEmpty())
+        <section class="bg-white border-t border-slate-200">
+            <div class="mx-auto max-w-5xl px-4 py-16">
+                <div class="flex items-end justify-between">
+                    <h2 class="text-2xl font-bold text-slate-900">Latest from our blog</h2>
+                    <a href="{{ route('public.blog.index') }}" class="text-sm font-medium text-indigo-600 hover:underline">View all &rarr;</a>
+                </div>
+                <div class="mt-8 grid gap-6 sm:grid-cols-3">
+                    @foreach ($latestPosts as $post)
+                        <a href="{{ route('public.blog.show', $post->slug) }}"
+                           class="group flex flex-col rounded-xl overflow-hidden ring-1 ring-slate-200 hover:shadow-md transition">
+                            @if ($post->featureImageUrl())
+                                <div class="aspect-[16/9] bg-slate-100 overflow-hidden">
+                                    <img src="{{ $post->featureImageUrl() }}" alt="{{ $post->title }}" loading="lazy"
+                                         class="h-full w-full object-cover group-hover:scale-105 transition duration-300">
+                                </div>
+                            @endif
+                            <div class="p-4">
+                                @if ($post->category)
+                                    <span class="text-xs font-medium text-indigo-600">{{ $post->category->name }}</span>
+                                @endif
+                                <h3 class="mt-1 font-semibold text-slate-900 group-hover:text-indigo-700">{{ $post->title }}</h3>
+                                <span class="mt-2 block text-xs text-slate-400">{{ optional($post->published_at)->format('d M Y') }}</span>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
 @endsection

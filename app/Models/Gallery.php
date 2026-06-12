@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 class Gallery extends Model
 {
     protected $fillable = [
-        'center_id', 'user_id', 'title', 'slug', 'description',
+        'center_id', 'user_id', 'title', 'slug', 'description', 'year',
         'cover_image', 'approval_status', 'is_published', 'sort',
     ];
 
