@@ -5,12 +5,14 @@ namespace App\Filament\Resources;
 use App\Filament\Concerns\ScopesToCenter;
 use App\Filament\Resources\PostResource\Pages;
 use App\Models\Post;
+use App\Services\ImageProcessor;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class PostResource extends Resource
 {
@@ -57,8 +59,13 @@ class PostResource extends Resource
 
                 Forms\Components\FileUpload::make('feature_image')
                     ->image()
-                    ->directory('posts')
-                    ->imageEditor(),
+                    // Optimised to WebP + watermarked, like gallery images.
+                    ->saveUploadedFileUsing(function (TemporaryUploadedFile $file, Forms\Get $get) {
+                        $center = $get('center_id') ?: 'trust';
+                        return app(ImageProcessor::class)
+                            ->process($file, "centers/{$center}/posts", watermark: true) . '_display.webp';
+                    })
+                    ->deleteUploadedFileUsing(fn (?string $file) => app(ImageProcessor::class)->delete($file)),
 
                 Forms\Components\Select::make('status')
                     ->options(['draft' => 'Draft', 'published' => 'Published'])

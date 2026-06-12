@@ -5,11 +5,13 @@ namespace App\Filament\Resources;
 use App\Filament\Concerns\ScopesToCenter;
 use App\Filament\Resources\StudentResource\Pages;
 use App\Models\Student;
+use App\Services\ImageProcessor;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class StudentResource extends Resource
 {
@@ -67,8 +69,13 @@ class StudentResource extends Resource
                 Forms\Components\FileUpload::make('photo_path')
                     ->label('Photograph')
                     ->image()
-                    ->directory('students')
-                    ->imageEditor(),
+                    // Optimised to WebP — but NO watermark on ID/profile photos.
+                    ->saveUploadedFileUsing(function (TemporaryUploadedFile $file, Forms\Get $get) {
+                        $center = $get('center_id') ?: (auth()->user()?->center_id ?: 'misc');
+                        return app(ImageProcessor::class)
+                            ->process($file, "centers/{$center}/students", watermark: false) . '_display.webp';
+                    })
+                    ->deleteUploadedFileUsing(fn (?string $file) => app(ImageProcessor::class)->delete($file)),
 
                 Forms\Components\Textarea::make('address')
                     ->columnSpanFull(),

@@ -19,7 +19,7 @@ class RolePermissionSeeder extends Seeder
         // Reset cached roles/permissions before (re)seeding.
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-        $resources = ['center', 'user', 'student', 'registration', 'post', 'setting'];
+        $resources = ['center', 'user', 'student', 'registration', 'post', 'setting', 'gallery'];
         $abilities = ['view_any', 'view', 'create', 'update', 'delete'];
 
         $permissions = [];
@@ -36,6 +36,7 @@ class RolePermissionSeeder extends Seeder
             'record_payment',       // record cash / confirm UPI manually
             'view_any_payment',     // financial audit list
             'view_payment',
+            'approve_gallery',      // moderate: approve/reject submitted albums
         ]);
 
         foreach ($permissions as $name) {
@@ -51,6 +52,7 @@ class RolePermissionSeeder extends Seeder
             'view_any_setting', 'view_setting', 'update_setting',
             'view_any_post', 'view_post',
             'view_any_payment', 'view_payment',
+            'view_any_gallery', 'view_gallery',
         ]);
 
         // ---- Center Head: full control, but only over their own center's rows ----
@@ -62,6 +64,8 @@ class RolePermissionSeeder extends Seeder
             'score_registration', 'record_payment',
             'view_any_payment', 'view_payment',
             'view_any_post', 'view_post', 'create_post', 'update_post', 'delete_post',
+            // Galleries: create/manage own center's albums; approval is Trust-only.
+            'view_any_gallery', 'view_gallery', 'create_gallery', 'update_gallery', 'delete_gallery',
         ]);
 
         // ---- Trust Admin: no explicit permissions needed (Gate::before grants all) ----

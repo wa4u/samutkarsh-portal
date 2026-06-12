@@ -3,6 +3,7 @@
 use App\Http\Controllers\InstallController;
 use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\Public\CheckoutController;
+use App\Http\Controllers\Public\GalleryController;
 use App\Http\Controllers\Public\RegistrationController;
 use App\Http\Controllers\Public\ResultController;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +21,11 @@ Route::controller(ResultController::class)->group(function () {
     Route::get('/result', 'form')->name('public.result.form');
     // Rate-limited to deter phone-number enumeration.
     Route::post('/result', 'lookup')->middleware('throttle:10,1')->name('public.result.lookup');
+});
+
+Route::controller(GalleryController::class)->group(function () {
+    Route::get('/gallery', 'index')->name('public.gallery.index');
+    Route::get('/gallery/{gallery:slug}', 'show')->name('public.gallery.show');
 });
 
 Route::controller(CheckoutController::class)->group(function () {

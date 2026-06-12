@@ -16,6 +16,7 @@
                 Samutkarsh IAS Academy
             </a>
             <nav class="flex items-center gap-1 text-sm font-medium">
+                <a href="{{ route('public.gallery.index') }}" class="px-3 py-2 rounded-md text-slate-600 hover:text-indigo-700 hover:bg-indigo-50">Gallery</a>
                 <a href="{{ route('public.register.create') }}" class="px-3 py-2 rounded-md text-slate-600 hover:text-indigo-700 hover:bg-indigo-50">Register</a>
                 <a href="{{ route('public.result.form') }}" class="px-3 py-2 rounded-md text-slate-600 hover:text-indigo-700 hover:bg-indigo-50">Check Result</a>
             </nav>
