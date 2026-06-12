@@ -132,7 +132,9 @@ return [
              *
              * For more check https://www.php.net/manual/zip.constants.php and confirm it's supported by your system.
              */
-            'compression_method' => ZipArchive::CM_DEFAULT,
+            // Guarded so config loads even on a PHP SAPI without the zip extension
+            // (some CLI builds lack it) — avoids crashing every artisan command.
+            'compression_method' => extension_loaded('zip') ? \ZipArchive::CM_DEFAULT : 0,
 
             /*
              * The compression level corresponding to the used algorithm; an integer between 0 and 9.
