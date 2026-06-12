@@ -13,7 +13,8 @@
 /.zed
 /auth.json
 /node_modules
-/public/build
+# /public/build is intentionally committed: the shared host has no build tools,
+# so deploying compiled assets via `git pull` avoids a manual upload each time.
 /public/hot
 /public/storage
 /storage/*.key
