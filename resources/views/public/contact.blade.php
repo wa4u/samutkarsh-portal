@@ -4,12 +4,8 @@
 
 @php
     use App\Models\Setting;
-    $email        = Setting::get('contact.email', 'samutkarshias@gmail.com');
-    $hubballi     = Setting::get('contact.address_hubballi', 'Samutkarsh Study Center, KLE Tech, BVB Campus, Vidyanagar, Hubballi 580031');
-    $phoneHubballi= Setting::get('contact.phone_hubballi', '96634 24767');
-    $bengaluru    = Setting::get('contact.address_bengaluru', 'Shanders Group, 1097, 18th B Main Road, 5th Block, Rajajinagar, Bengaluru 560010');
-    $phoneBengaluru = Setting::get('contact.phone_bengaluru', '95918 55055');
-    $mapEmbed     = Setting::get('contact.map_embed');
+    $email    = Setting::get('contact.email', 'samutkarshias@gmail.com');
+    $mapEmbed = Setting::get('contact.map_embed');
 @endphp
 
 @section('content')
@@ -27,19 +23,36 @@
         @endif
 
         <div class="mt-8 grid gap-8 lg:grid-cols-2">
-            {{-- Details --}}
+            {{-- Centers (single source of truth) --}}
             <div class="space-y-6">
-                <div class="rounded-xl bg-white p-6 ring-1 ring-slate-200">
-                    <h2 class="font-semibold text-slate-900">Hubballi <span class="ml-2 rounded bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-700">Head Office</span></h2>
-                    <p class="mt-2 text-sm text-slate-600">{{ $hubballi }}</p>
-                    <p class="mt-1 text-sm text-slate-600">Phone: <a href="tel:{{ preg_replace('/\s/', '', $phoneHubballi) }}" class="text-indigo-600">{{ $phoneHubballi }}</a></p>
-                </div>
-                <div class="rounded-xl bg-white p-6 ring-1 ring-slate-200">
-                    <h2 class="font-semibold text-slate-900">Bengaluru</h2>
-                    <p class="mt-2 text-sm text-slate-600">{{ $bengaluru }}</p>
-                    <p class="mt-1 text-sm text-slate-600">Phone: <a href="tel:{{ preg_replace('/\s/', '', $phoneBengaluru) }}" class="text-indigo-600">{{ $phoneBengaluru }}</a></p>
-                </div>
-                <p class="text-sm text-slate-600">Email: <a href="mailto:{{ $email }}" class="text-indigo-600">{{ $email }}</a></p>
+                @forelse ($centers as $center)
+                    <div class="rounded-xl bg-white p-6 ring-1 ring-slate-200">
+                        <h2 class="font-semibold text-slate-900">
+                            {{ $center->name }}
+                            @if ($center->is_head_office)
+                                <span class="ml-2 rounded bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-700">Head Office</span>
+                            @endif
+                        </h2>
+                        @if ($center->is_physical && $center->address)
+                            <p class="mt-2 text-sm text-slate-600">{{ $center->address }}</p>
+                        @else
+                            <p class="mt-2 text-sm text-slate-500">Online — reachable by phone.</p>
+                        @endif
+                        @if ($center->contact_phone)
+                            <p class="mt-1 text-sm text-slate-600">Phone:
+                                <a href="tel:{{ preg_replace('/\s/', '', $center->contact_phone) }}" class="text-indigo-600">{{ $center->contact_phone }}</a>
+                            </p>
+                        @endif
+                        @if ($center->contact_email)
+                            <p class="text-sm text-slate-600">Email: <a href="mailto:{{ $center->contact_email }}" class="text-indigo-600">{{ $center->contact_email }}</a></p>
+                        @endif
+                    </div>
+                @empty
+                    <p class="text-sm text-slate-500">Center details will appear here once centers are added.</p>
+                @endforelse
+
+                <p class="text-sm text-slate-600">General email: <a href="mailto:{{ $email }}" class="text-indigo-600">{{ $email }}</a></p>
+
                 @if ($mapEmbed)
                     <div class="overflow-hidden rounded-xl ring-1 ring-slate-200">
                         <iframe src="{{ $mapEmbed }}" width="100%" height="240" style="border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>

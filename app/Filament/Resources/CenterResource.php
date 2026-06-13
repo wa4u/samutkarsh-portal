@@ -45,6 +45,12 @@ class CenterResource extends Resource
                     ->columnSpanFull(),
                 Forms\Components\Toggle::make('is_active')
                     ->default(true),
+                Forms\Components\Toggle::make('is_physical')
+                    ->label('Physical office')
+                    ->helperText('On = show the address (and map) on the Contact page. Off = virtual / phone-only.'),
+                Forms\Components\Toggle::make('is_head_office')
+                    ->label('Head office'),
+                Forms\Components\TextInput::make('sort')->numeric()->default(0),
             ]);
     }
 
@@ -57,6 +63,8 @@ class CenterResource extends Resource
                 Tables\Columns\TextColumn::make('city')->searchable(),
                 Tables\Columns\TextColumn::make('contact_phone')->toggleable(),
                 Tables\Columns\TextColumn::make('students_count')->counts('students')->label('Students'),
+                Tables\Columns\IconColumn::make('is_physical')->boolean()->label('Physical'),
+                Tables\Columns\IconColumn::make('is_head_office')->boolean()->label('HQ'),
                 Tables\Columns\IconColumn::make('is_active')->boolean(),
             ])
             ->filters([

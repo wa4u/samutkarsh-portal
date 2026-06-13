@@ -6,6 +6,7 @@ use App\Models\GalleryItem;
 use App\Services\ImageProcessor;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -68,6 +69,40 @@ class ItemsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),
+
+                // Add many photos at once — each is processed (WebP + watermark).
+                Tables\Actions\Action::make('bulkUpload')
+                    ->label('Bulk upload images')
+                    ->icon('heroicon-o-arrow-up-tray')
+                    ->color('gray')
+                    ->form([
+                        Forms\Components\FileUpload::make('files')
+                            ->label('Images')
+                            ->image()
+                            ->multiple()
+                            ->reorderable()
+                            ->required()
+                            ->storeFiles(false),
+                    ])
+                    ->action(function (array $data, $livewire): void {
+                        $gallery = $livewire->getOwnerRecord();
+                        $center = $gallery->center_id ?: 'trust';
+                        $sort = (int) $gallery->items()->max('sort');
+
+                        foreach ($data['files'] as $file) {
+                            $base = app(ImageProcessor::class)
+                                ->process($file, "centers/{$center}/gallery", watermark: true);
+                            $gallery->items()->create([
+                                'type'       => 'image',
+                                'image_path' => $base . '_display.webp',
+                                'sort'       => ++$sort,
+                            ]);
+                        }
+
+                        Notification::make()
+                            ->title(count($data['files']) . ' image(s) added')
+                            ->success()->send();
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

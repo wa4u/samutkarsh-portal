@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use FilamentTiptapEditor\TiptapEditor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -58,7 +59,11 @@ class PageResource extends Resource
                     }
                 }),
 
-            Forms\Components\RichEditor::make('content')->columnSpanFull(),
+            TiptapEditor::make('content')
+                ->profile('default')
+                ->disk('public')
+                ->directory('editor')
+                ->columnSpanFull(),
 
             Forms\Components\Toggle::make('is_published'),
             Forms\Components\TextInput::make('sort')->numeric()->default(0),

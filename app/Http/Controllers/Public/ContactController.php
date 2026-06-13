@@ -12,7 +12,11 @@ class ContactController extends Controller
     public function show()
     {
         return view('public.contact', [
-            'centers' => Center::where('is_active', true)->orderBy('name')->get(),
+            'centers' => Center::where('is_active', true)
+                ->orderByDesc('is_head_office')
+                ->orderBy('sort')
+                ->orderBy('name')
+                ->get(),
         ]);
     }
 

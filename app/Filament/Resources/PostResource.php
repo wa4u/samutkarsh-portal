@@ -11,6 +11,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use FilamentTiptapEditor\TiptapEditor;
 use Illuminate\Support\Str;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
@@ -63,7 +64,10 @@ class PostResource extends Resource
                     ->maxLength(500)
                     ->columnSpanFull(),
 
-                Forms\Components\RichEditor::make('content')
+                TiptapEditor::make('content')
+                    ->profile('default')
+                    ->disk('public')
+                    ->directory('editor')   // inline images; resize & align in the toolbar
                     ->required()
                     ->columnSpanFull(),
 
