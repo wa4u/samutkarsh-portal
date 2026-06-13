@@ -4,6 +4,7 @@ use App\Http\Controllers\InstallController;
 use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\Public\BlogController;
 use App\Http\Controllers\Public\CheckoutController;
+use App\Http\Controllers\Public\ContactController;
 use App\Http\Controllers\Public\GalleryController;
 use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\PageController;
@@ -34,6 +35,11 @@ Route::controller(ResultController::class)->group(function () {
 Route::controller(GalleryController::class)->group(function () {
     Route::get('/gallery', 'index')->name('public.gallery.index');
     Route::get('/gallery/{gallery:slug}', 'show')->name('public.gallery.show');
+});
+
+Route::controller(ContactController::class)->group(function () {
+    Route::get('/contact', 'show')->name('public.contact');
+    Route::post('/contact', 'store')->middleware('throttle:6,1')->name('public.contact.store');
 });
 
 Route::controller(CheckoutController::class)->group(function () {

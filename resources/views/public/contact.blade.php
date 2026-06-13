@@ -1,0 +1,90 @@
+@extends('layouts.public')
+
+@section('title', 'Contact & Admissions — Samutkarsh IAS Academy')
+
+@php
+    use App\Models\Setting;
+    $email        = Setting::get('contact.email', 'samutkarshias@gmail.com');
+    $hubballi     = Setting::get('contact.address_hubballi', 'Samutkarsh Study Center, KLE Tech, BVB Campus, Vidyanagar, Hubballi 580031');
+    $phoneHubballi= Setting::get('contact.phone_hubballi', '96634 24767');
+    $bengaluru    = Setting::get('contact.address_bengaluru', 'Shanders Group, 1097, 18th B Main Road, 5th Block, Rajajinagar, Bengaluru 560010');
+    $phoneBengaluru = Setting::get('contact.phone_bengaluru', '95918 55055');
+    $mapEmbed     = Setting::get('contact.map_embed');
+@endphp
+
+@section('content')
+    <div class="mx-auto max-w-5xl px-4 py-12">
+        <h1 class="text-2xl font-bold text-slate-900">Contact &amp; Admissions</h1>
+        <p class="mt-1 text-sm text-slate-600">We'd love to hear from you. Reach a center or send us a message.</p>
+
+        @if (session('status'))
+            <div class="mt-6 rounded-lg bg-green-50 p-4 text-sm text-green-700 ring-1 ring-green-200">{{ session('status') }}</div>
+        @endif
+        @if ($errors->any())
+            <div class="mt-6 rounded-lg bg-red-50 p-4 text-sm text-red-700 ring-1 ring-red-200">
+                <ul class="list-disc list-inside space-y-1">@foreach ($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
+            </div>
+        @endif
+
+        <div class="mt-8 grid gap-8 lg:grid-cols-2">
+            {{-- Details --}}
+            <div class="space-y-6">
+                <div class="rounded-xl bg-white p-6 ring-1 ring-slate-200">
+                    <h2 class="font-semibold text-slate-900">Hubballi <span class="ml-2 rounded bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-700">Head Office</span></h2>
+                    <p class="mt-2 text-sm text-slate-600">{{ $hubballi }}</p>
+                    <p class="mt-1 text-sm text-slate-600">Phone: <a href="tel:{{ preg_replace('/\s/', '', $phoneHubballi) }}" class="text-indigo-600">{{ $phoneHubballi }}</a></p>
+                </div>
+                <div class="rounded-xl bg-white p-6 ring-1 ring-slate-200">
+                    <h2 class="font-semibold text-slate-900">Bengaluru</h2>
+                    <p class="mt-2 text-sm text-slate-600">{{ $bengaluru }}</p>
+                    <p class="mt-1 text-sm text-slate-600">Phone: <a href="tel:{{ preg_replace('/\s/', '', $phoneBengaluru) }}" class="text-indigo-600">{{ $phoneBengaluru }}</a></p>
+                </div>
+                <p class="text-sm text-slate-600">Email: <a href="mailto:{{ $email }}" class="text-indigo-600">{{ $email }}</a></p>
+                @if ($mapEmbed)
+                    <div class="overflow-hidden rounded-xl ring-1 ring-slate-200">
+                        <iframe src="{{ $mapEmbed }}" width="100%" height="240" style="border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                @endif
+            </div>
+
+            {{-- Inquiry form --}}
+            <form method="POST" action="{{ route('public.contact.store') }}" class="rounded-xl bg-white p-6 ring-1 ring-slate-200 space-y-4">
+                @csrf
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700">Name <span class="text-red-500">*</span></label>
+                        <input type="text" name="name" value="{{ old('name') }}" required class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700">Mobile <span class="text-red-500">*</span></label>
+                        <input type="tel" name="phone" value="{{ old('phone') }}" required inputmode="numeric" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+                </div>
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700">Email</label>
+                        <input type="email" name="email" value="{{ old('email') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700">Interested center</label>
+                        <select name="center_id" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
+                            <option value="">— Any / not sure —</option>
+                            @foreach ($centers as $center)
+                                <option value="{{ $center->id }}" @selected(old('center_id') == $center->id)>{{ $center->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">Subject</label>
+                    <input type="text" name="subject" value="{{ old('subject') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700">Message <span class="text-red-500">*</span></label>
+                    <textarea name="message" rows="4" required class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">{{ old('message') }}</textarea>
+                </div>
+                <button type="submit" class="w-full rounded-lg bg-indigo-600 px-4 py-3 font-semibold text-white hover:bg-indigo-700">Send message</button>
+            </form>
+        </div>
+    </div>
+@endsection

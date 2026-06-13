@@ -5,8 +5,11 @@
 @section('content')
     <section class="bg-gradient-to-b from-indigo-600 to-indigo-700 text-white">
         <div class="mx-auto max-w-5xl px-4 py-20 text-center">
-            <h1 class="text-4xl sm:text-5xl font-bold tracking-tight">Shape your civil services journey</h1>
+            <h1 class="text-4xl sm:text-5xl font-bold tracking-tight">{{ \App\Models\Setting::get('site.hero_title', 'Shape your civil services journey') }}</h1>
             <p class="mt-4 text-lg text-indigo-100 max-w-2xl mx-auto">
+                {{ \App\Models\Setting::get('site.hero_subtitle', 'Nation Building through IAS.') }}
+            </p>
+            <p class="mt-2 text-sm text-indigo-200">
                 Admissions for {{ config('admissions.academic_year') }} are
                 {{ config('admissions.registration_open') ? 'open' : 'closed' }} across all Samutkarsh centers.
             </p>

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\MenuItem;
 use App\Models\Page;
+use App\Models\Setting;
 use Illuminate\Database\Seeder;
 
 /**
@@ -15,6 +16,21 @@ class SiteSeeder extends Seeder
 {
     public function run(): void
     {
+        // Editable site/contact settings (managed in admin → Settings).
+        $settings = [
+            'site.hero_title'        => ['Shape your civil services journey', 'site'],
+            'site.hero_subtitle'     => ['Nation Building through IAS — from school foundation to civil services, across Karnataka.', 'site'],
+            'contact.email'          => ['samutkarshias@gmail.com', 'contact'],
+            'contact.phone_hubballi' => ['96634 24767', 'contact'],
+            'contact.phone_bengaluru'=> ['95918 55055', 'contact'],
+            'contact.address_hubballi'  => ['Samutkarsh Study Center, KLE Tech, BVB Campus, Vidyanagar, Hubballi 580031', 'contact'],
+            'contact.address_bengaluru' => ['Shanders Group, 1097, 18th B Main Road, 5th Block, Rajajinagar, Bengaluru 560010', 'contact'],
+            'contact.map_embed'      => ['', 'contact'],  // paste a Google Maps embed URL
+        ];
+        foreach ($settings as $key => [$value, $group]) {
+            Setting::firstOrCreate(['key' => $key], ['value' => $value, 'type' => 'text', 'group' => $group]);
+        }
+
         foreach ($this->pages() as $slug => [$title, $content]) {
             Page::firstOrCreate(
                 ['slug' => $slug],
@@ -55,8 +71,7 @@ class SiteSeeder extends Seeder
 
         $top('Gallery', 6, 'route', 'public.gallery.index');
         $top('Blog', 7, 'route', 'public.blog.index');
-        // Repoint to the /contact page once the contact module ships.
-        $top('Contact & Admissions', 8, 'route', 'public.register.create');
+        $top('Contact & Admissions', 8, 'route', 'public.contact');
     }
 
     /** @return array<string,array{0:string,1:string}> */
@@ -67,7 +82,7 @@ class SiteSeeder extends Seeder
                 '<p>An integrated foundation course that starts early to help children discover their potential through life skills and the values needed for IAS, IPS and other civil services. <em>(Earlier offered as Spoorthi–Keerthi.)</em></p>'
                 . '<p><strong>For:</strong> school students, classes 6–9. <strong>Duration:</strong> 16–20 weeks, weekly classes (usually Sundays).</p>'
                 . '<h3>What students gain</h3><p>Officer-like qualities, emotional intelligence, communication and creativity, reading/writing/speaking skills, and an early orientation to civil services.</p>'
-                . '<h3>Programme highlights</h3><ul><li>Self Development &amp; Team Management</li><li>Hobbies &amp; Healthy Habits</li><li>Family &amp; Society</li><li>Goal Setting &amp; Career Guidance</li><li>Logical Reasoning</li><li>History &amp; Bharat Darshan</li><li>Compassion &amp; Interdependence</li><li>Current Affairs</li><li>Model Parliament &amp; interaction with IAS/IPS/KAS officers</li><li>Pride of India, Village Visit, Creativity / Vedic Maths</li></ul>'],
+                . '<p>The detailed weekly curriculum is shared with enrolled students and parents.</p>'],
 
             'utkarsh' => ['Utkarsh — for Degree Students',
                 '<p>For students pursuing a degree in any stream. Guides and motivates them towards civil services preparation while building an overall successful personality.</p>'
@@ -101,7 +116,7 @@ class SiteSeeder extends Seeder
                 . '<p><em>Nation Building through IAS.</em></p>'],
 
             'infrastructure-centers' => ['Infrastructure & Centers',
-                '<h3>Hubballi</h3><p>Samutkarsh Study Center, KLE Tech, BVB Campus, Vidyanagar, Hubballi 580031<br>Phone: 96634 24767</p>'
+                '<h3>Hubballi <em>(Head Office)</em></h3><p>Samutkarsh Study Center, KLE Tech, BVB Campus, Vidyanagar, Hubballi 580031<br>Phone: 96634 24767</p>'
                 . '<h3>Bengaluru</h3><p>Shanders Group, 5th Block, 1097, 18th B Main Road, Rajajinagar, Bengaluru 560010<br>Phone: 95918 55055</p>'
                 . '<p>Samutkarsh also runs school, college and orientation activities across Karnataka — including Belagavi, Ballari, Gangavati and other districts.</p>'],
 
