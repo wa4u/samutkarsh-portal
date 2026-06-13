@@ -6,6 +6,7 @@ use App\Http\Controllers\Public\BlogController;
 use App\Http\Controllers\Public\CheckoutController;
 use App\Http\Controllers\Public\GalleryController;
 use App\Http\Controllers\Public\HomeController;
+use App\Http\Controllers\Public\PageController;
 use App\Http\Controllers\Public\RegistrationController;
 use App\Http\Controllers\Public\ResultController;
 use Illuminate\Support\Facades\Route;
@@ -49,3 +50,10 @@ Route::post('/payments/webhook/{gateway}', [PaymentWebhookController::class, 'ha
 // One-time web installer for no-CLI hosts. Inert unless INSTALL_TOKEN is set in
 // .env and the ?token= matches. REMOVE INSTALL_TOKEN after installing.
 Route::get('/__setup', InstallController::class)->name('app.setup');
+
+// CMS pages — MUST stay last. Single-segment catch-all that resolves a published
+// Page by slug. The negative-lookahead prevents it from ever shadowing the
+// reserved top-level paths above.
+Route::get('/{page:slug}', [PageController::class, 'show'])
+    ->where('page', '^(?!admin|blog|gallery|register|result|checkout|payments|__setup|up|storage).*$')
+    ->name('public.page');
