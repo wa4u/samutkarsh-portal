@@ -61,23 +61,27 @@ class MenuItemResource extends Resource
                 ->options(['none' => 'No link (dropdown header)', 'route' => 'Internal page', 'page' => 'CMS page', 'url' => 'External URL'])
                 ->default('none')->required()->live(),
 
-            // One of these (all bound to link_value) shows based on link_type.
-            Forms\Components\Select::make('link_value')
+            // Distinct fields (not persisted) that compose into link_value on save —
+            // avoids the same-name collision that broke the edit screen.
+            Forms\Components\Select::make('route_target')
                 ->label('Target page')
                 ->options(MenuItem::routeOptions())
+                ->dehydrated(false)
                 ->visible(fn (Forms\Get $get) => $get('link_type') === 'route')
                 ->required(fn (Forms\Get $get) => $get('link_type') === 'route'),
 
-            Forms\Components\Select::make('link_value')
+            Forms\Components\Select::make('page_target')
                 ->label('CMS page')
                 ->options(fn () => Page::orderBy('title')->pluck('title', 'slug'))
                 ->searchable()
+                ->dehydrated(false)
                 ->visible(fn (Forms\Get $get) => $get('link_type') === 'page')
                 ->required(fn (Forms\Get $get) => $get('link_type') === 'page'),
 
-            Forms\Components\TextInput::make('link_value')
+            Forms\Components\TextInput::make('url_target')
                 ->label('External URL')
                 ->url()
+                ->dehydrated(false)
                 ->visible(fn (Forms\Get $get) => $get('link_type') === 'url')
                 ->required(fn (Forms\Get $get) => $get('link_type') === 'url'),
 
@@ -108,6 +112,31 @@ class MenuItemResource extends Resource
             ])
             ->actions([Tables\Actions\EditAction::make()])
             ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
+    }
+
+    /** Fold the per-type target field back into link_value before saving. */
+    public static function composeLinkValue(array $data): array
+    {
+        $data['link_value'] = match ($data['link_type'] ?? 'none') {
+            'route' => $data['route_target'] ?? null,
+            'page'  => $data['page_target'] ?? null,
+            'url'   => $data['url_target'] ?? null,
+            default => null,
+        };
+        unset($data['route_target'], $data['page_target'], $data['url_target']);
+
+        return $data;
+    }
+
+    /** Populate the right target field from link_value when editing. */
+    public static function explodeLinkValue(array $data): array
+    {
+        $type = $data['link_type'] ?? null;
+        $data['route_target'] = $type === 'route' ? ($data['link_value'] ?? null) : null;
+        $data['page_target']  = $type === 'page' ? ($data['link_value'] ?? null) : null;
+        $data['url_target']   = $type === 'url' ? ($data['link_value'] ?? null) : null;
+
+        return $data;
     }
 
     public static function getPages(): array

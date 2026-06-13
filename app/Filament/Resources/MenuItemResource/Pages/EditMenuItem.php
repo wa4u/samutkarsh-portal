@@ -14,4 +14,14 @@ class EditMenuItem extends EditRecord
     {
         return [Actions\DeleteAction::make()];
     }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        return MenuItemResource::explodeLinkValue($data);
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        return MenuItemResource::composeLinkValue($data);
+    }
 }
