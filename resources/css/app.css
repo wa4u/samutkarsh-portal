@@ -10,3 +10,11 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* Rich-text (TinyMCE) image alignment.
+   Floated images get breathing room so wrapping text doesn't hug them,
+   and the prose block clears its floats so they can't bleed into whatever
+   follows (e.g. the Downloads list). */
+.prose img[style*="float: left"]  { margin: 0.5rem 1.75rem 1rem 0; }
+.prose img[style*="float: right"] { margin: 0.5rem 0 1rem 1.75rem; }
+.prose::after { content: ""; display: block; clear: both; }

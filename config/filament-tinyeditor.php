@@ -81,7 +81,10 @@ return [
         'toolbar' => [
             // 'fontsize' => '10px 12px 13px 14px 16px 18px 20px',
             // 'fontfamily' => 'Tahoma=tahoma,arial,helvetica,sans-serif;',
-            // 'content_style' => 'body { font-family: "Tahoma", sans-serif; }',
-        ]
+        ],
+        // Styles applied inside the editor body so aligned images preview with
+        // the same spacing as the public site (see resources/css/app.css).
+        'content_style' => 'img[style*="float: left"]{margin:.5rem 1.75rem 1rem 0}'
+            . 'img[style*="float: right"]{margin:.5rem 0 1rem 1.75rem}',
     ]
 ];
