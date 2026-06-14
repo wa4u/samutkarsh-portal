@@ -9,7 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use FilamentTiptapEditor\TiptapEditor;
+use App\Filament\Forms\Components\ContentEditor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -59,11 +59,7 @@ class PageResource extends Resource
                     }
                 }),
 
-            TiptapEditor::make('content')
-                ->profile('default')
-                ->disk('public')
-                ->directory('editor')
-                ->columnSpanFull(),
+            ContentEditor::make('content'),
 
             Forms\Components\Toggle::make('is_published'),
             Forms\Components\TextInput::make('sort')->numeric()->default(0),

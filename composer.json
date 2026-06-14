@@ -7,8 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "awcodes/filament-curator": "^3.0",
-        "awcodes/filament-tiptap-editor": "^3.0",
+        "amidesfahani/filament-tinyeditor": "3.0",
         "endroid/qr-code": "^5.0",
         "filament/filament": "^3.3",
         "intervention/image": "^2.7.2",

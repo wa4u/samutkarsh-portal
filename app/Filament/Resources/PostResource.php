@@ -11,7 +11,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use FilamentTiptapEditor\TiptapEditor;
+use App\Filament\Forms\Components\ContentEditor;
 use Illuminate\Support\Str;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
@@ -64,12 +64,9 @@ class PostResource extends Resource
                     ->maxLength(500)
                     ->columnSpanFull(),
 
-                TiptapEditor::make('content')
-                    ->profile('default')
-                    ->disk('public')
-                    ->directory('editor')   // inline images; resize & align in the toolbar
-                    ->required()
-                    ->columnSpanFull(),
+                // TinyMCE: basic tools + image / link / media. Inline images are
+                // optimised to WebP on upload and resized/aligned in the editor.
+                ContentEditor::make('content')->required(),
 
                 Forms\Components\FileUpload::make('feature_image')
                     ->image()
@@ -80,6 +77,21 @@ class PostResource extends Resource
                             ->process($file, "centers/{$center}/posts", watermark: true) . '_display.webp';
                     })
                     ->deleteUploadedFileUsing(fn (?string $file) => app(ImageProcessor::class)->delete($file)),
+
+                // Optional PDFs rendered as a "Downloads" list beneath the article.
+                Forms\Components\FileUpload::make('attachments')
+                    ->label('Downloads (PDF)')
+                    ->helperText('Optional PDF files — shown as a download list under the article.')
+                    ->multiple()
+                    ->reorderable()
+                    ->acceptedFileTypes(['application/pdf'])
+                    ->maxSize(10240)
+                    ->disk('public')
+                    ->directory('post-attachments')
+                    ->visibility('public')
+                    ->downloadable()
+                    ->openable()
+                    ->columnSpanFull(),
 
                 Forms\Components\Select::make('status')
                     ->options(['draft' => 'Draft', 'published' => 'Published'])

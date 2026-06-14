@@ -12,11 +12,12 @@ class Post extends Model
 {
     protected $fillable = [
         'center_id', 'category_id', 'user_id', 'title', 'slug', 'excerpt',
-        'content', 'feature_image', 'status', 'published_at',
+        'content', 'feature_image', 'attachments', 'status', 'published_at',
     ];
 
     protected $casts = [
         'published_at' => 'datetime',
+        'attachments' => 'array',
     ];
 
     protected static function booted(): void
@@ -56,5 +57,23 @@ class Post extends Model
         return $this->feature_image
             ? Storage::disk(config('media.disk'))->url($this->feature_image)
             : null;
+    }
+
+    /**
+     * Downloadable PDF attachments as [name, url] pairs for the public view.
+     * Stored as relative paths on the 'public' disk by the admin FileUpload.
+     */
+    public function downloads(): array
+    {
+        $disk = Storage::disk('public');
+
+        return collect($this->attachments ?? [])
+            ->filter()
+            ->map(fn (string $path) => [
+                'name' => basename($path),
+                'url'  => $disk->url($path),
+            ])
+            ->values()
+            ->all();
     }
 }
