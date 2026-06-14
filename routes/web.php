@@ -11,44 +11,59 @@ use App\Http\Controllers\Public\PageController;
 use App\Http\Controllers\Public\RegistrationController;
 use App\Http\Controllers\Public\ResultController;
 use App\Http\Controllers\Public\SeoController;
+use App\Http\Middleware\SetLocale;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [HomeController::class, 'index'])->name('public.home');
+// Single-segment slugs the CMS page catch-all must never claim.
+$reserved = '^(?!admin|blog|gallery|register|result|checkout|payments|__setup|up|storage|sitemap|robots|hi|kn).*$';
 
-// SEO — declared before the CMS catch-all so they aren't swallowed by it.
+/*
+ | Public content + admission funnel. Defined once, then registered twice:
+ |   - at the root for English (default, no prefix)
+ |   - under /{locale} for hi|kn (URL::formatPathUsing keeps links in-locale)
+ | Names stay canonical (public.*) at the root; the localized copies are given a
+ | 'loc.' name prefix so url generation always resolves to the English names and
+ | the path formatter adds the prefix when the active locale isn't English.
+ */
+$publicRoutes = function () {
+    Route::get('/', [HomeController::class, 'index'])->name('public.home');
+
+    Route::controller(BlogController::class)->group(function () {
+        Route::get('/blog', 'index')->name('public.blog.index');
+        Route::get('/blog/{post:slug}', 'show')->name('public.blog.show');
+    });
+
+    Route::controller(RegistrationController::class)->group(function () {
+        Route::get('/register', 'create')->name('public.register.create');
+        Route::post('/register', 'store')->name('public.register.store');
+        Route::get('/register/success', 'success')->name('public.register.success');
+    });
+
+    Route::controller(ResultController::class)->group(function () {
+        Route::get('/result', 'form')->name('public.result.form');
+        Route::post('/result', 'lookup')->middleware('throttle:10,1')->name('public.result.lookup');
+    });
+
+    Route::controller(GalleryController::class)->group(function () {
+        Route::get('/gallery', 'index')->name('public.gallery.index');
+        Route::get('/gallery/{gallery:slug}', 'show')->name('public.gallery.show');
+    });
+
+    Route::controller(ContactController::class)->group(function () {
+        Route::get('/contact', 'show')->name('public.contact');
+        Route::post('/contact', 'store')->middleware('throttle:6,1')->name('public.contact.store');
+    });
+};
+
+// English (default) — root, canonical names.
+Route::group([], $publicRoutes);
+
+// SEO — English canonical, declared before the catch-all.
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('public.sitemap');
 Route::get('/robots.txt', [SeoController::class, 'robots'])->name('public.robots');
 
-Route::controller(BlogController::class)->group(function () {
-    Route::get('/blog', 'index')->name('public.blog.index');
-    Route::get('/blog/{post:slug}', 'show')->name('public.blog.show');
-});
-
-// ---- Public admission pipeline ----
-Route::controller(RegistrationController::class)->group(function () {
-    Route::get('/register', 'create')->name('public.register.create');
-    Route::post('/register', 'store')->name('public.register.store');
-    Route::get('/register/success', 'success')->name('public.register.success');
-});
-
-Route::controller(ResultController::class)->group(function () {
-    Route::get('/result', 'form')->name('public.result.form');
-    // Rate-limited to deter phone-number enumeration.
-    Route::post('/result', 'lookup')->middleware('throttle:10,1')->name('public.result.lookup');
-});
-
-Route::controller(GalleryController::class)->group(function () {
-    Route::get('/gallery', 'index')->name('public.gallery.index');
-    Route::get('/gallery/{gallery:slug}', 'show')->name('public.gallery.show');
-});
-
-Route::controller(ContactController::class)->group(function () {
-    Route::get('/contact', 'show')->name('public.contact');
-    Route::post('/contact', 'store')->middleware('throttle:6,1')->name('public.contact.store');
-});
-
+// ---- Checkout (signed, transactional — kept English-only, never localized) ----
 Route::controller(CheckoutController::class)->group(function () {
-    // Reached only via a temporary signed URL from the Result Gateway.
     Route::get('/checkout/{registration}', 'show')->middleware('signed')->name('public.checkout');
     Route::post('/checkout/{registration}/razorpay', 'razorpay')->name('public.checkout.razorpay');
     Route::post('/checkout/{registration}/upi', 'upiClaim')->name('public.checkout.upi');
@@ -58,13 +73,20 @@ Route::controller(CheckoutController::class)->group(function () {
 Route::post('/payments/webhook/{gateway}', [PaymentWebhookController::class, 'handle'])
     ->name('payments.webhook');
 
-// One-time web installer for no-CLI hosts. Inert unless INSTALL_TOKEN is set in
-// .env and the ?token= matches. REMOVE INSTALL_TOKEN after installing.
+// One-time web installer for no-CLI hosts.
 Route::get('/__setup', InstallController::class)->name('app.setup');
 
-// CMS pages — MUST stay last. Single-segment catch-all that resolves a published
-// Page by slug. The negative-lookahead prevents it from ever shadowing the
-// reserved top-level paths above.
+// Localized (hi|kn) — same funnel + a localized CMS page catch-all.
+Route::prefix('{locale}')
+    ->whereIn('locale', ['hi', 'kn'])
+    ->middleware(SetLocale::class)
+    ->name('loc.')
+    ->group(function () use ($publicRoutes, $reserved) {
+        $publicRoutes();
+        Route::get('/{page}', [PageController::class, 'showLocalized'])->where('page', $reserved)->name('public.page');
+    });
+
+// CMS pages — MUST stay last. English single-segment catch-all.
 Route::get('/{page:slug}', [PageController::class, 'show'])
-    ->where('page', '^(?!admin|blog|gallery|register|result|checkout|payments|__setup|up|storage).*$')
+    ->where('page', $reserved)
     ->name('public.page');

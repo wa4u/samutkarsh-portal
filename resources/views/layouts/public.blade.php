@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-50">
+<html lang="{{ app()->getLocale() }}" class="h-full bg-slate-50">
 @php
     use App\Models\Setting;
     $logo     = Setting::get('site.logo_url');
@@ -14,6 +14,20 @@
     ]));
     $seoDesc  = trim(strip_tags((string) Setting::get('site.hero_subtitle', 'Nation Building through IAS — civil services coaching from school foundation to UPSC/KPSC, across Karnataka.')));
     // Built in PHP (not @json) so the @-prefixed schema.org keys aren't parsed as Blade directives.
+    // Language switcher / hreflang: build raw URLs (bypassing the locale path
+    // formatter) for the current page in each language.
+    $curLocale = app()->getLocale();
+    $bare = '/' . ltrim(request()->path(), '/');
+    $bare = preg_replace('#^/(hi|kn)(?=/|$)#', '', $bare);
+    if ($bare === '' || $bare === false) { $bare = '/'; }
+    $root = request()->getSchemeAndHttpHost();
+    $langUrls = [
+        'en' => $root . $bare,
+        'hi' => $root . '/hi' . ($bare === '/' ? '' : $bare),
+        'kn' => $root . '/kn' . ($bare === '/' ? '' : $bare),
+    ];
+    $langLabels = ['en' => 'English', 'hi' => 'हिन्दी', 'kn' => 'ಕನ್ನಡ'];
+
     $orgJsonLd = json_encode(array_filter([
         '@context'    => 'https://schema.org',
         '@type'       => 'EducationalOrganization',
@@ -35,6 +49,10 @@
     {{-- SEO --}}
     <meta name="description" content="@yield('meta_description', $seoDesc)">
     <link rel="canonical" href="{{ url()->current() }}">
+    @foreach ($langUrls as $lc => $href)
+        <link rel="alternate" hreflang="{{ $lc }}" href="{{ $href }}">
+    @endforeach
+    <link rel="alternate" hreflang="x-default" href="{{ $langUrls['en'] }}">
     <meta property="og:site_name" content="Samutkarsh IAS Academy">
     <meta property="og:type" content="website">
     <meta property="og:title" content="@yield('og_title', 'Samutkarsh IAS Academy')">
@@ -74,9 +92,24 @@
                 @endif
             </div>
             <div class="flex items-center gap-3 shrink-0">
-                <a href="{{ route('public.result.form') }}" class="hover:text-white">Check result</a>
+                {{-- Language switcher --}}
+                <div class="relative group">
+                    <button class="inline-flex items-center gap-1 hover:text-white" aria-label="Change language">
+                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5h12M9 3v2m3.5 13 4.5-9 4.5 9M5 8c0 4 2.5 7 6 8M9 12c2 2 4 3 6 3"/></svg>
+                        <span>{{ $langLabels[$curLocale] ?? 'English' }}</span>
+                        <svg class="h-3 w-3 opacity-70" viewBox="0 0 20 20" fill="currentColor"><path d="M5.5 7.5 10 12l4.5-4.5z"/></svg>
+                    </button>
+                    <div class="absolute right-0 top-full hidden group-hover:block pt-2 w-36 z-50">
+                        <div class="rounded-lg bg-white py-1 shadow-xl ring-1 ring-slate-200 text-slate-700">
+                            @foreach ($langLabels as $lc => $label)
+                                <a href="{{ $langUrls[$lc] }}"
+                                   class="block px-3 py-2 text-sm hover:bg-brand-50 hover:text-brand-700 {{ $curLocale === $lc ? 'font-bold text-brand-700' : '' }}">{{ $label }}</a>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
                 <span class="text-white/30">|</span>
-                <a href="{{ route('public.contact') }}" class="hover:text-white">Contact</a>
+                <a href="{{ route('public.result.form') }}" class="hover:text-white">Check result</a>
             </div>
         </div>
     </div>
