@@ -33,9 +33,18 @@ return [
         // Basic editing + image / link / media — the toolset requested for
         // posts & pages. Images get drag-handle resize + the align buttons.
         'default' => [
-            'plugins' => 'autoresize advlist autolink lists link image media table code wordcount',
+            'plugins' => 'autoresize advlist autolink lists link image media table code wordcount quickbars',
             'toolbar' => 'undo redo | blocks | bold italic underline | bullist numlist | blockquote | alignleft aligncenter alignright | link image media | removeformat code',
             'upload_directory' => 'editor',
+            // Floating toolbar that appears when an image is selected:
+            // align left/center/right, rotate, and size/options. The text
+            // insert/selection quickbars are off to keep the UI uncluttered.
+            'custom_configs' => [
+                'quickbars_image_toolbar' => 'alignleft aligncenter alignright | rotateleft rotateright | imageoptions',
+                'quickbars_insert_toolbar' => false,
+                'quickbars_selection_toolbar' => false,
+                'image_caption' => true,
+            ],
         ],
 
         'simple' => [
