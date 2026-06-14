@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 class MenuItem extends Model
 {
     protected $fillable = [
-        'parent_id', 'location', 'label', 'link_type', 'link_value', 'target_blank', 'sort', 'is_active',
+        'parent_id', 'location', 'label', 'description', 'link_type', 'link_value', 'target_blank', 'sort', 'is_active',
     ];
 
     protected $casts = [

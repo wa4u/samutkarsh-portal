@@ -45,7 +45,13 @@ class MenuItemResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\TextInput::make('label')->required()->maxLength(255),
+            Forms\Components\TextInput::make('label')->required()->maxLength(255)
+                ->helperText('Keep top-level labels short (e.g. "Courses", "About") so the menu fits on one line.'),
+
+            Forms\Components\TextInput::make('description')
+                ->label('Short description (optional)')
+                ->maxLength(255)
+                ->helperText('Shown under the link in the mega-menu — best for dropdown sub-items.'),
 
             Forms\Components\Select::make('location')
                 ->options(['header' => 'Header', 'footer' => 'Footer'])

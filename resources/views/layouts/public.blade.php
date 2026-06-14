@@ -137,31 +137,44 @@
                 ]);
             @endphp
 
-            {{-- Desktop nav --}}
-            <nav class="hidden lg:flex items-center gap-0.5 text-sm font-semibold">
+            {{-- Desktop mega-menu (xl+, so long labels don't wrap) --}}
+            <nav class="hidden xl:flex items-center gap-0.5 text-sm font-semibold">
                 @forelse ($headerMenu ?? [] as $item)
                     @if ($item->hasChildren())
                         <div class="relative group">
-                            <button class="px-3 py-2 rounded-md text-slate-700 hover:text-brand-700 hover:bg-brand-50 inline-flex items-center gap-1">
+                            <button class="whitespace-nowrap px-3 py-2 rounded-md text-slate-700 hover:text-brand-700 hover:bg-brand-50 inline-flex items-center gap-1">
                                 {{ $item->label }}
-                                <svg class="h-3 w-3 opacity-60" viewBox="0 0 20 20" fill="currentColor"><path d="M5.5 7.5 10 12l4.5-4.5z"/></svg>
+                                <svg class="h-3 w-3 opacity-60 transition-transform group-hover:rotate-180" viewBox="0 0 20 20" fill="currentColor"><path d="M5.5 7.5 10 12l4.5-4.5z"/></svg>
                             </button>
-                            <div class="absolute left-0 top-full hidden group-hover:block pt-2 w-60">
-                                <div class="rounded-xl bg-white py-2 shadow-xl ring-1 ring-slate-200">
-                                    @foreach ($item->children as $child)
-                                        <a href="{{ $child->url() }}" @if ($child->target_blank) target="_blank" rel="noopener" @endif
-                                           class="block px-4 py-2 text-slate-600 hover:bg-brand-50 hover:text-brand-700">{{ $child->label }}</a>
-                                    @endforeach
+                            {{-- Mega panel --}}
+                            <div class="absolute left-0 top-full hidden group-hover:block pt-3 z-50">
+                                <div class="w-[26rem] max-w-[calc(100vw-3rem)] rounded-2xl bg-white shadow-2xl ring-1 ring-slate-200 overflow-hidden">
+                                    <div class="grid grid-cols-2 gap-1 p-3">
+                                        @foreach ($item->children as $child)
+                                            <a href="{{ $child->url() }}" @if ($child->target_blank) target="_blank" rel="noopener" @endif
+                                               class="group/c rounded-xl p-3 hover:bg-brand-50 transition">
+                                                <span class="block font-semibold text-slate-800 group-hover/c:text-brand-700">{{ $child->label }}</span>
+                                                @if ($child->description)
+                                                    <span class="mt-0.5 block text-xs font-normal leading-snug text-slate-500">{{ $child->description }}</span>
+                                                @endif
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                    <a href="{{ route('public.contact') }}"
+                                       class="flex items-center justify-between gap-3 bg-gradient-to-r from-brand-600 to-brand-700 px-5 py-3 text-white">
+                                        <span class="text-sm font-semibold">Questions? Talk to our team</span>
+                                        <span class="text-sm font-bold">Contact &rarr;</span>
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     @else
                         <a href="{{ $item->url() }}" @if ($item->target_blank) target="_blank" rel="noopener" @endif
-                           class="px-3 py-2 rounded-md text-slate-700 hover:text-brand-700 hover:bg-brand-50">{{ $item->label }}</a>
+                           class="whitespace-nowrap px-3 py-2 rounded-md text-slate-700 hover:text-brand-700 hover:bg-brand-50">{{ $item->label }}</a>
                     @endif
                 @empty
                     @foreach ($fallback as $item)
-                        <a href="{{ $item->href }}" class="px-3 py-2 rounded-md text-slate-700 hover:text-brand-700 hover:bg-brand-50">{{ $item->label }}</a>
+                        <a href="{{ $item->href }}" class="whitespace-nowrap px-3 py-2 rounded-md text-slate-700 hover:text-brand-700 hover:bg-brand-50">{{ $item->label }}</a>
                     @endforeach
                 @endforelse
             </nav>
@@ -173,14 +186,14 @@
                         Register now
                     </a>
                 @endif
-                <button id="mobile-menu-btn" class="lg:hidden p-2 text-slate-700" aria-label="Menu" aria-expanded="false">
+                <button id="mobile-menu-btn" class="xl:hidden p-2 text-slate-700" aria-label="Menu" aria-expanded="false">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
                 </button>
             </div>
         </div>
 
         {{-- Mobile nav --}}
-        <nav id="mobile-menu" class="lg:hidden hidden border-t border-slate-200 px-4 py-3 space-y-1 text-sm font-medium">
+        <nav id="mobile-menu" class="xl:hidden hidden border-t border-slate-200 px-4 py-3 space-y-1 text-sm font-medium">
             @forelse ($headerMenu ?? [] as $item)
                 @if ($item->hasChildren())
                     <div class="py-1">
