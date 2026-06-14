@@ -52,10 +52,16 @@ class MenuItemResource extends Resource
                 ->default('header')->required(),
 
             // Only top-level items can be parents → max one level of dropdown.
+            // Plain options (not ->relationship()) to avoid Filament's relationship
+            // select resolving a null model on this self-referential relation.
             Forms\Components\Select::make('parent_id')
                 ->label('Parent (leave empty for a top-level item)')
-                ->relationship('parent', 'label', fn (Builder $q) => $q->whereNull('parent_id'))
-                ->searchable()->preload(),
+                ->options(fn (?MenuItem $record) => MenuItem::query()
+                    ->whereNull('parent_id')
+                    ->when($record, fn (Builder $q) => $q->whereKeyNot($record->getKey()))
+                    ->orderBy('label')
+                    ->pluck('label', 'id'))
+                ->searchable(),
 
             Forms\Components\Select::make('link_type')
                 ->options(['none' => 'No link (dropdown header)', 'route' => 'Internal page', 'page' => 'CMS page', 'url' => 'External URL'])
