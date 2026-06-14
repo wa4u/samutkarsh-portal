@@ -22,6 +22,8 @@ class SiteSeeder extends Seeder
             'site.tagline'           => ['Nation Building through IAS', 'site'],
             'site.hero_title'        => ['Shape your civil services journey', 'site'],
             'site.hero_subtitle'     => ['Nation Building through IAS — from school foundation to civil services, across Karnataka.', 'site'],
+            'site.hero_image'        => ['', 'site'],   // optional hero background image URL
+            'site.hero_video'        => ['', 'site'],   // optional hero background MP4 URL (image acts as poster)
             'contact.whatsapp'       => ['', 'contact'],   // digits only incl. country code, e.g. 919663424767
             'contact.email'          => ['samutkarshias@gmail.com', 'contact'],
             'contact.phone_hubballi' => ['96634 24767', 'contact'],
