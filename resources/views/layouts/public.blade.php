@@ -1,22 +1,60 @@
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-slate-50">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Samutkarsh IAS Academy')</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @stack('head')
-</head>
 @php
     use App\Models\Setting;
     $logo     = Setting::get('site.logo_url');
+    $logoAbs  = $logo ? (\Illuminate\Support\Str::startsWith($logo, ['http://', 'https://']) ? $logo : url($logo)) : null;
     $tagline  = Setting::get('site.tagline', 'Nation Building through IAS');
     $phone    = Setting::get('contact.phone_hubballi');
     $email    = Setting::get('contact.email');
     $whatsapp = preg_replace('/\D+/', '', (string) Setting::get('contact.whatsapp'));
     $regOpen  = (bool) config('admissions.registration_open');
+    $socials  = array_values(array_filter([
+        Setting::get('social.facebook'), Setting::get('social.instagram'), Setting::get('social.youtube'),
+    ]));
+    $seoDesc  = trim(strip_tags((string) Setting::get('site.hero_subtitle', 'Nation Building through IAS — civil services coaching from school foundation to UPSC/KPSC, across Karnataka.')));
+    // Built in PHP (not @json) so the @-prefixed schema.org keys aren't parsed as Blade directives.
+    $orgJsonLd = json_encode(array_filter([
+        '@context'    => 'https://schema.org',
+        '@type'       => 'EducationalOrganization',
+        'name'        => 'Samutkarsh IAS Academy',
+        'url'         => url('/'),
+        'description' => $seoDesc,
+        'logo'        => $logoAbs,
+        'email'       => $email ?: null,
+        'telephone'   => $phone ?: null,
+        'sameAs'      => $socials ?: null,
+    ]), JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 @endphp
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'Samutkarsh IAS Academy')</title>
+
+    {{-- SEO --}}
+    <meta name="description" content="@yield('meta_description', $seoDesc)">
+    <link rel="canonical" href="{{ url()->current() }}">
+    <meta property="og:site_name" content="Samutkarsh IAS Academy">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="@yield('og_title', 'Samutkarsh IAS Academy')">
+    <meta property="og:description" content="@yield('meta_description', $seoDesc)">
+    <meta property="og:url" content="{{ url()->current() }}">
+    @hasSection('og_image')
+        <meta property="og:image" content="@yield('og_image')">
+    @elseif ($logoAbs)
+        <meta property="og:image" content="{{ $logoAbs }}">
+    @endif
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('og_title', 'Samutkarsh IAS Academy')">
+    <meta name="twitter:description" content="@yield('meta_description', $seoDesc)">
+
+    {{-- Organization structured data --}}
+    <script type="application/ld+json">{!! $orgJsonLd !!}</script>
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('head')
+</head>
 <body class="min-h-full flex flex-col text-slate-800 antialiased">
     {{-- Utility bar --}}
     <div class="bg-ink-900 text-white/90 text-xs">

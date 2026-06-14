@@ -1,6 +1,11 @@
 @extends('layouts.public')
 
 @section('title', $post->title . ' — Samutkarsh IAS Academy')
+@section('og_title', $post->title)
+@section('meta_description', \Illuminate\Support\Str::limit(strip_tags($post->excerpt ?: $post->content), 155))
+@if ($post->featureImageUrl())
+    @section('og_image', url($post->featureImageUrl()))
+@endif
 
 @section('content')
     <article class="mx-auto max-w-3xl px-4 py-12">
