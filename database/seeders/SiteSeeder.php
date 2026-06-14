@@ -18,14 +18,20 @@ class SiteSeeder extends Seeder
     {
         // Editable site/contact settings (managed in admin → Settings).
         $settings = [
+            'site.logo_url'          => ['', 'site'],   // paste a logo image URL (e.g. /storage/branding/logo.png)
+            'site.tagline'           => ['Nation Building through IAS', 'site'],
             'site.hero_title'        => ['Shape your civil services journey', 'site'],
             'site.hero_subtitle'     => ['Nation Building through IAS — from school foundation to civil services, across Karnataka.', 'site'],
+            'contact.whatsapp'       => ['', 'contact'],   // digits only incl. country code, e.g. 919663424767
             'contact.email'          => ['samutkarshias@gmail.com', 'contact'],
             'contact.phone_hubballi' => ['96634 24767', 'contact'],
             'contact.phone_bengaluru'=> ['95918 55055', 'contact'],
             'contact.address_hubballi'  => ['Samutkarsh Study Center, KLE Tech, BVB Campus, Vidyanagar, Hubballi 580031', 'contact'],
             'contact.address_bengaluru' => ['Shanders Group, 1097, 18th B Main Road, 5th Block, Rajajinagar, Bengaluru 560010', 'contact'],
             'contact.map_embed'      => ['', 'contact'],  // paste a Google Maps embed URL
+            'social.facebook'        => ['', 'social'],
+            'social.instagram'       => ['', 'social'],
+            'social.youtube'         => ['', 'social'],
         ];
         foreach ($settings as $key => [$value, $group]) {
             Setting::firstOrCreate(['key' => $key], ['value' => $value, 'type' => 'text', 'group' => $group]);
