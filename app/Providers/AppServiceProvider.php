@@ -59,15 +59,17 @@ class AppServiceProvider extends ServiceProvider
         // Share the admin-managed header menu with the public layout. Guarded so a
         // request before migrations (fresh deploy) doesn't fatal.
         View::composer('layouts.public', function ($view) {
-            $menu = new Collection();
+            $header = new Collection();
+            $footer = new Collection();
             try {
                 if (Schema::hasTable('menu_items')) {
-                    $menu = MenuItem::tree('header');
+                    $header = MenuItem::tree('header');
+                    $footer = MenuItem::tree('footer');
                 }
             } catch (Throwable) {
                 // table missing / DB not ready — fall back to empty (layout has defaults)
             }
-            $view->with('headerMenu', $menu);
+            $view->with('headerMenu', $header)->with('footerMenu', $footer);
         });
     }
 }

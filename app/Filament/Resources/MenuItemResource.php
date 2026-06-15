@@ -117,7 +117,7 @@ class MenuItemResource extends Resource
                 Tables\Columns\TextColumn::make('link_type')->badge(),
                 Tables\Columns\TextColumn::make('link')->getStateUsing(fn (MenuItem $r) => $r->url())->limit(40)->color('gray'),
                 Tables\Columns\TextColumn::make('location')->badge(),
-                Tables\Columns\IconColumn::make('is_active')->boolean(),
+                Tables\Columns\ToggleColumn::make('is_active')->label('Active'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('location')->options(['header' => 'Header', 'footer' => 'Footer']),

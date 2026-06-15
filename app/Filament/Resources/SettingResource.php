@@ -25,6 +25,7 @@ class SettingResource extends Resource
         'text'    => 'Text',
         'html'    => 'HTML (sanitized on output)',
         'boolean' => 'Boolean',
+        'image'   => 'Image (upload)',
         'json'    => 'JSON',
     ];
 
@@ -51,10 +52,19 @@ class SettingResource extends Resource
                 Forms\Components\Toggle::make('value')
                     ->visible(fn (Forms\Get $get) => $get('type') === 'boolean'),
 
+                Forms\Components\FileUpload::make('value')
+                    ->label('Image')
+                    ->image()
+                    ->disk('public')
+                    ->directory('branding')
+                    ->visibility('public')
+                    ->visible(fn (Forms\Get $get) => $get('type') === 'image')
+                    ->helperText('Stored on the public disk; the public site resolves the path automatically.'),
+
                 Forms\Components\Textarea::make('value')
                     ->rows(6)
                     ->columnSpanFull()
-                    ->visible(fn (Forms\Get $get) => $get('type') !== 'boolean'),
+                    ->visible(fn (Forms\Get $get) => ! in_array($get('type'), ['boolean', 'image'], true)),
             ]);
     }
 

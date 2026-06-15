@@ -2,13 +2,19 @@
 <html lang="{{ app()->getLocale() }}" class="h-full bg-slate-50">
 @php
     use App\Models\Setting;
-    $logo     = Setting::get('site.logo_url');
-    $logoAbs  = $logo ? (\Illuminate\Support\Str::startsWith($logo, ['http://', 'https://']) ? $logo : url($logo)) : null;
+    use Illuminate\Support\Str;
+    // Logo: an uploaded file (stored path) or a pasted URL — resolve both to a usable src.
+    $logoRaw  = Setting::get('site.logo_url');
+    $logo     = $logoRaw ? (Str::startsWith($logoRaw, ['http://', 'https://', '/']) ? $logoRaw : \Illuminate\Support\Facades\Storage::disk('public')->url($logoRaw)) : null;
+    $logoAbs  = $logo ? (Str::startsWith($logo, ['http://', 'https://']) ? $logo : url($logo)) : null;
     $tagline  = Setting::get('site.tagline', 'Nation Building through IAS');
     $phone    = Setting::get('contact.phone_hubballi');
     $email    = Setting::get('contact.email');
     $whatsapp = preg_replace('/\D+/', '', (string) Setting::get('contact.whatsapp'));
     $regOpen  = (bool) config('admissions.registration_open');
+    // Admin can hide the Register CTA even while admissions are open.
+    $showRegister = $regOpen && filter_var(Setting::get('site.show_register', '1'), FILTER_VALIDATE_BOOLEAN);
+    $footerMenu = $footerMenu ?? collect();
     $socials  = array_values(array_filter([
         Setting::get('social.facebook'), Setting::get('social.instagram'), Setting::get('social.youtube'),
     ]));
@@ -137,7 +143,7 @@
                 ]);
             @endphp
 
-            {{-- Desktop mega-menu (xl+, so long labels don't wrap) --}}
+            {{-- Desktop nav (xl+, so long labels don't wrap) --}}
             <nav class="hidden xl:flex items-center gap-0.5 text-sm font-semibold">
                 @forelse ($headerMenu ?? [] as $item)
                     @if ($item->hasChildren())
@@ -146,25 +152,18 @@
                                 {{ $item->label }}
                                 <svg class="h-3 w-3 opacity-60 transition-transform group-hover:rotate-180" viewBox="0 0 20 20" fill="currentColor"><path d="M5.5 7.5 10 12l4.5-4.5z"/></svg>
                             </button>
-                            {{-- Mega panel --}}
-                            <div class="absolute left-0 top-full hidden group-hover:block pt-3 z-50">
-                                <div class="w-[26rem] max-w-[calc(100vw-3rem)] rounded-2xl bg-white shadow-2xl ring-1 ring-slate-200 overflow-hidden">
-                                    <div class="grid grid-cols-2 gap-1 p-3">
-                                        @foreach ($item->children as $child)
-                                            <a href="{{ $child->url() }}" @if ($child->target_blank) target="_blank" rel="noopener" @endif
-                                               class="group/c rounded-xl p-3 hover:bg-brand-50 transition">
-                                                <span class="block font-semibold text-slate-800 group-hover/c:text-brand-700">{{ $child->label }}</span>
-                                                @if ($child->description)
-                                                    <span class="mt-0.5 block text-xs font-normal leading-snug text-slate-500">{{ $child->description }}</span>
-                                                @endif
-                                            </a>
-                                        @endforeach
-                                    </div>
-                                    <a href="{{ route('public.contact') }}"
-                                       class="flex items-center justify-between gap-3 bg-gradient-to-r from-brand-600 to-brand-700 px-5 py-3 text-white">
-                                        <span class="text-sm font-semibold">Questions? Talk to our team</span>
-                                        <span class="text-sm font-bold">Contact &rarr;</span>
-                                    </a>
+                            {{-- Simple dropdown (clean, WWF-style) --}}
+                            <div class="absolute left-0 top-full hidden group-hover:block pt-2 z-50">
+                                <div class="w-72 rounded-xl bg-white py-2 shadow-xl ring-1 ring-slate-200">
+                                    @foreach ($item->children as $child)
+                                        <a href="{{ $child->url() }}" @if ($child->target_blank) target="_blank" rel="noopener" @endif
+                                           class="block px-4 py-2.5 hover:bg-brand-50">
+                                            <span class="block text-slate-700 group-hover:text-slate-700 hover:!text-brand-700">{{ $child->label }}</span>
+                                            @if ($child->description)
+                                                <span class="block text-xs font-normal text-slate-400">{{ $child->description }}</span>
+                                            @endif
+                                        </a>
+                                    @endforeach
                                 </div>
                             </div>
                         </div>
@@ -180,7 +179,7 @@
             </nav>
 
             <div class="flex items-center gap-2 shrink-0">
-                @if ($regOpen)
+                @if ($showRegister)
                     <a href="{{ route('public.register.create') }}"
                        class="hidden sm:inline-flex items-center rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-brand-700 transition">
                         Register now
@@ -212,7 +211,7 @@
                     <a href="{{ $item->href }}" class="block px-2 py-2 text-slate-700 hover:text-brand-700">{{ $item->label }}</a>
                 @endforeach
             @endforelse
-            @if ($regOpen)
+            @if ($showRegister)
                 <a href="{{ route('public.register.create') }}" class="mt-2 block rounded-lg bg-brand-600 px-3 py-2.5 text-center font-bold text-white">Register now</a>
             @endif
         </nav>
@@ -240,10 +239,14 @@
             <div>
                 <h3 class="text-sm font-bold uppercase tracking-wide text-white">Explore</h3>
                 <ul class="mt-4 space-y-2 text-sm">
-                    <li><a href="{{ route('public.home') }}" class="hover:text-white">Home</a></li>
-                    <li><a href="{{ route('public.blog.index') }}" class="hover:text-white">Blog &amp; Articles</a></li>
-                    <li><a href="{{ route('public.gallery.index') }}" class="hover:text-white">Gallery</a></li>
-                    <li><a href="{{ route('public.contact') }}" class="hover:text-white">Contact &amp; Admissions</a></li>
+                    @forelse ($footerMenu as $item)
+                        <li><a href="{{ $item->url() }}" @if ($item->target_blank) target="_blank" rel="noopener" @endif class="hover:text-white">{{ $item->label }}</a></li>
+                    @empty
+                        <li><a href="{{ route('public.home') }}" class="hover:text-white">Home</a></li>
+                        <li><a href="{{ route('public.blog.index') }}" class="hover:text-white">Blog &amp; Articles</a></li>
+                        <li><a href="{{ route('public.gallery.index') }}" class="hover:text-white">Gallery</a></li>
+                        <li><a href="{{ route('public.contact') }}" class="hover:text-white">Contact &amp; Admissions</a></li>
+                    @endforelse
                 </ul>
             </div>
 
@@ -272,8 +275,8 @@
         </div>
         <div class="border-t border-white/10">
             <div class="mx-auto max-w-6xl px-4 py-5 text-xs text-slate-400 flex flex-col sm:flex-row justify-between gap-2">
-                <span>&copy; {{ date('Y') }} Samutkarsh IAS Academy. All rights reserved.</span>
-                <span>Admissions {{ config('admissions.academic_year') }}</span>
+                <span>&copy; {{ date('Y') }} {{ Setting::get('footer.copyright', 'Samutkarsh IAS Academy. All rights reserved.') }}</span>
+                <span>{{ Setting::get('footer.note', 'Admissions ' . config('admissions.academic_year')) }}</span>
             </div>
         </div>
     </footer>
