@@ -11,6 +11,7 @@ use App\Http\Controllers\Public\PageController;
 use App\Http\Controllers\Public\RegistrationController;
 use App\Http\Controllers\Public\ResultController;
 use App\Http\Controllers\Public\SeoController;
+use App\Http\Controllers\Public\TestimonialController;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Support\Facades\Route;
 
@@ -48,6 +49,8 @@ $publicRoutes = function () {
         Route::get('/gallery', 'index')->name('public.gallery.index');
         Route::get('/gallery/{gallery:slug}', 'show')->name('public.gallery.show');
     });
+
+    Route::get('/testimonials', [TestimonialController::class, 'index'])->name('public.testimonials');
 
     Route::controller(ContactController::class)->group(function () {
         Route::get('/contact', 'show')->name('public.contact');

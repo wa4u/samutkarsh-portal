@@ -21,7 +21,7 @@ class HomeSectionEditTest extends TestCase
         $this->actingAs($user)->get('/admin/home-sections')->assertSuccessful();
 
         // Each section's edit form must render (catches duplicate-statePath bugs).
-        foreach (['hero', 'why', 'programmes', 'audience', 'cta', 'blog'] as $key) {
+        foreach (['hero', 'why', 'programmes', 'audience', 'cta', 'blog', 'testimonials'] as $key) {
             $section = HomeSection::where('key', $key)->firstOrFail();
             $this->actingAs($user)
                 ->get("/admin/home-sections/{$section->id}/edit")
