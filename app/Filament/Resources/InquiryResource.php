@@ -78,7 +78,7 @@ class InquiryResource extends Resource
                 Tables\Columns\TextColumn::make('center.name')->label('Center')->placeholder('—'),
                 Tables\Columns\TextColumn::make('subject')->limit(30)->placeholder('—'),
                 Tables\Columns\TextColumn::make('status')->badge()
-                    ->color(fn (string $s) => match ($s) { 'new' => 'warning', 'in_progress' => 'info', default => 'gray' }),
+                    ->color(fn (string $state) => match ($state) { 'new' => 'warning', 'in_progress' => 'info', default => 'gray' }),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
