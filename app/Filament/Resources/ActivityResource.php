@@ -32,7 +32,9 @@ class ActivityResource extends Resource
         return $form->schema([
             Forms\Components\DatePicker::make('date')->required()->default(now())->native(false),
             Forms\Components\TextInput::make('center')->label('Centre / location')
-                ->placeholder('Belagavi North, Raichur…')->maxLength(255),
+                ->placeholder('Belagavi North, Raichur…')->maxLength(255)
+                ->datalist(\App\Support\Centres::list())
+                ->helperText('Pick an existing centre, or type a new one.'),
             Forms\Components\TextInput::make('title')->required()->maxLength(255)
                 ->placeholder('Session topic / event name')->columnSpanFull(),
             ContentEditor::make('body')->label('Report'),

@@ -28,7 +28,9 @@ class TestimonialResource extends Resource
         return $form->schema([
             Forms\Components\TextInput::make('author_name')->label('Name')->required()->maxLength(255),
             Forms\Components\TextInput::make('role')->label('Role / relation')->placeholder('Parent, Student…')->maxLength(255),
-            Forms\Components\TextInput::make('center')->label('Centre')->placeholder('Hubballi, Belagavi North…')->maxLength(255),
+            Forms\Components\TextInput::make('center')->label('Centre')->placeholder('Hubballi, Belagavi North…')->maxLength(255)
+                ->datalist(\App\Support\Centres::list())
+                ->helperText('Pick an existing centre, or type a new one.'),
             Forms\Components\DatePicker::make('date')->label('Date (optional)')->native(false),
             Forms\Components\Textarea::make('body')->label('Message')->required()->rows(5)
                 ->helperText('Paste the message as-is (any language).')->columnSpanFull(),
