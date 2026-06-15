@@ -18,6 +18,7 @@ class SeoController extends Controller
             ['loc' => route('public.blog.index'),    'freq' => 'daily',   'pri' => '0.8'],
             ['loc' => route('public.gallery.index'), 'freq' => 'weekly',  'pri' => '0.6'],
             ['loc' => route('public.testimonials'),  'freq' => 'weekly',  'pri' => '0.5'],
+            ['loc' => route('public.activities'),    'freq' => 'weekly',  'pri' => '0.6'],
             ['loc' => route('public.contact'),       'freq' => 'monthly', 'pri' => '0.7'],
         ];
 

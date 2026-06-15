@@ -4,6 +4,7 @@ use App\Http\Controllers\InstallController;
 use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\Public\BlogController;
 use App\Http\Controllers\Public\CheckoutController;
+use App\Http\Controllers\Public\ActivityController;
 use App\Http\Controllers\Public\ContactController;
 use App\Http\Controllers\Public\GalleryController;
 use App\Http\Controllers\Public\HomeController;
@@ -51,6 +52,8 @@ $publicRoutes = function () {
     });
 
     Route::get('/testimonials', [TestimonialController::class, 'index'])->name('public.testimonials');
+
+    Route::get('/activities', [ActivityController::class, 'index'])->name('public.activities');
 
     Route::controller(ContactController::class)->group(function () {
         Route::get('/contact', 'show')->name('public.contact');

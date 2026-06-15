@@ -138,6 +138,7 @@
             @php
                 $fallback = collect([
                     (object) ['label' => 'Home', 'href' => route('public.home')],
+                    (object) ['label' => 'Activities', 'href' => route('public.activities')],
                     (object) ['label' => 'Blog', 'href' => route('public.blog.index')],
                     (object) ['label' => 'Gallery', 'href' => route('public.gallery.index')],
                 ]);
@@ -243,6 +244,7 @@
                         <li><a href="{{ $item->url() }}" @if ($item->target_blank) target="_blank" rel="noopener" @endif class="hover:text-white">{{ $item->label }}</a></li>
                     @empty
                         <li><a href="{{ route('public.home') }}" class="hover:text-white">Home</a></li>
+                        <li><a href="{{ route('public.activities') }}" class="hover:text-white">Activities</a></li>
                         <li><a href="{{ route('public.blog.index') }}" class="hover:text-white">Blog &amp; Articles</a></li>
                         <li><a href="{{ route('public.gallery.index') }}" class="hover:text-white">Gallery</a></li>
                         <li><a href="{{ route('public.contact') }}" class="hover:text-white">Contact &amp; Admissions</a></li>
