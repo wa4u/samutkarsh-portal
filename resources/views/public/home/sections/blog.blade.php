@@ -1,8 +1,9 @@
 {{-- Latest blog --}}
+@php $c = $c ?? []; @endphp
 @if (($latestPosts ?? collect())->isNotEmpty())
     <section class="mx-auto max-w-6xl px-4 py-20">
         <div class="flex items-end justify-between">
-            <h2 class="text-3xl font-extrabold tracking-tight text-slate-900">Latest from our blog</h2>
+            <h2 class="text-3xl font-extrabold tracking-tight text-slate-900">{{ $c['heading'] ?? 'Latest from our blog' }}</h2>
             <a href="{{ route('public.blog.index') }}" class="text-sm font-semibold text-brand-600 hover:underline">View all &rarr;</a>
         </div>
         <div class="mt-10 grid gap-6 sm:grid-cols-3">

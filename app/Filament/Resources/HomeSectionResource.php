@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\HomeSectionResource\Pages;
 use App\Models\HomeSection;
+use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -36,13 +37,67 @@ class HomeSectionResource extends Resource
 
     public static function canViewAny(): bool { return self::trust(); }
     public static function canCreate(): bool { return false; }
-    public static function canEdit(Model $record): bool { return false; }
+    public static function canEdit(Model $record): bool { return self::trust(); }
     public static function canDelete(Model $record): bool { return false; }
     public static function canDeleteAny(): bool { return false; }
 
+    /** Visible only when editing one of the given section keys. */
+    protected static function forKeys(string ...$keys): \Closure
+    {
+        return fn (?HomeSection $record) => in_array($record?->key, $keys, true);
+    }
+
     public static function form(Form $form): Form
     {
-        return $form->schema([]);
+        // Each content.* path is declared ONCE (avoids duplicate-statePath bugs);
+        // visibility decides which appear for the section being edited.
+        return $form->schema([
+            Forms\Components\Placeholder::make('section')
+                ->content(fn (?HomeSection $record) => $record?->label)
+                ->helperText('Leave a field blank to use the built-in default text.'),
+
+            // Shared text
+            Forms\Components\TextInput::make('content.heading')->label('Heading')
+                ->visible(self::forKeys('why', 'programmes', 'cta', 'blog')),
+            Forms\Components\Textarea::make('content.body')->label('Paragraph / text')->rows(4)
+                ->visible(self::forKeys('why', 'cta')),
+            Forms\Components\Textarea::make('content.intro')->label('Intro')->rows(2)
+                ->visible(self::forKeys('programmes')),
+
+            // Hero
+            Forms\Components\TextInput::make('content.badge')->label('Badge text')->visible(self::forKeys('hero')),
+            Forms\Components\TextInput::make('content.title')->label('Heading')->visible(self::forKeys('hero')),
+            Forms\Components\Textarea::make('content.subtitle')->label('Subtitle')->rows(2)->visible(self::forKeys('hero')),
+            Forms\Components\FileUpload::make('content.image')->label('Background image')->image()
+                ->disk('public')->directory('home')->visibility('public')->visible(self::forKeys('hero')),
+            Forms\Components\TextInput::make('content.video')->label('Background video (MP4 URL)')->url()->visible(self::forKeys('hero'))
+                ->helperText('Optional. Plays muted/looped; the image above is the poster.'),
+            Forms\Components\TextInput::make('content.cta_explore')->label('“Explore” button label')->visible(self::forKeys('hero')),
+            Forms\Components\TextInput::make('content.cta_status')->label('“Check status” button label')->visible(self::forKeys('hero')),
+
+            // Register button label (hero + closing CTA both have one)
+            Forms\Components\TextInput::make('content.cta_primary')->label('Register button label')->visible(self::forKeys('hero', 'cta')),
+            Forms\Components\TextInput::make('content.cta_secondary')->label('Secondary button label')->visible(self::forKeys('cta')),
+
+            // Why — values + stats
+            Forms\Components\TagsInput::make('content.values')->label('Value chips')->visible(self::forKeys('why'))
+                ->helperText('Press Enter after each value.'),
+            Forms\Components\TextInput::make('content.closing')->label('Closing line')->visible(self::forKeys('why')),
+            Forms\Components\Repeater::make('content.stats')->label('Stat boxes')->visible(self::forKeys('why'))
+                ->schema([
+                    Forms\Components\TextInput::make('label')->required(),
+                    Forms\Components\TextInput::make('value')->label('Big value')->required(),
+                    Forms\Components\TextInput::make('caption'),
+                ])->columns(3)->grid(2)->reorderable()->collapsible(),
+
+            // Programmes / Audience cards
+            Forms\Components\Repeater::make('content.cards')->label('Cards')->visible(self::forKeys('programmes', 'audience'))
+                ->schema([
+                    Forms\Components\TextInput::make('title')->required(),
+                    Forms\Components\TextInput::make('desc')->label('Description'),
+                    Forms\Components\TextInput::make('link')->label('Link (page slug or URL)'),
+                ])->columns(3)->reorderable()->collapsible()->itemLabel(fn (array $state) => $state['title'] ?? 'Card'),
+        ]);
     }
 
     public static function table(Table $table): Table
@@ -55,6 +110,9 @@ class HomeSectionResource extends Resource
                 Tables\Columns\TextColumn::make('key')->badge()->color('gray'),
                 Tables\Columns\ToggleColumn::make('is_enabled')->label('Shown'),
             ])
+            ->actions([
+                Tables\Actions\EditAction::make()->label('Edit content'),
+            ])
             ->paginated(false);
     }
 
@@ -62,6 +120,7 @@ class HomeSectionResource extends Resource
     {
         return [
             'index' => Pages\ListHomeSections::route('/'),
+            'edit' => Pages\EditHomeSection::route('/{record}/edit'),
         ];
     }
 }

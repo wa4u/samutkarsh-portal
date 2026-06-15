@@ -12,8 +12,9 @@
         $heroVideo = \App\Models\Setting::get('site.hero_video');
     @endphp
 
-    {{-- Sections are admin-managed (admin → Home page): toggle on/off + drag to reorder. --}}
-    @foreach ($homeSections as $key)
-        @includeIf('public.home.sections.' . $key)
+    {{-- Sections are admin-managed (admin → Home page): toggle on/off, reorder, edit text/media.
+         $c = that section's editable content (empty array → partial uses its defaults). --}}
+    @foreach ($homeSections as $key => $content)
+        @includeIf('public.home.sections.' . $key, ['c' => $content])
     @endforeach
 @endsection

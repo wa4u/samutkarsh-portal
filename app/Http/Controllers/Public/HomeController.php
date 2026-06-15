@@ -11,7 +11,7 @@ class HomeController extends Controller
     public function index()
     {
         return view('public.home', [
-            'homeSections' => HomeSection::enabledKeys(),
+            'homeSections' => HomeSection::ordered(),
             'latestPosts' => Post::published()
                 ->with('category')
                 ->latest('published_at')
