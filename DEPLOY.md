@@ -171,14 +171,17 @@ The Activities diary, testimonials, and photo galleries were curated once from
 the group's WhatsApp export. To load them on a fresh server:
 
 ```bash
-# 1. Activities (214 session reports) and testimonials (16) — committed,
-#    phone-scrubbed seed data. Both arrive UNPUBLISHED for review.
+# One shot — activities (214), testimonials (16), and photo galleries
+# (36 albums / 339 images, fetched + optimised + watermarked on the server).
+# Everything lands UNPUBLISHED / pending for review. Idempotent.
+php artisan app:import-whatsapp
+
+# Text content only (skip the photo download):
+php artisan app:import-whatsapp --skip-photos
+
+# Or run any piece individually:
 php artisan db:seed --class=ActivitySeeder
 php artisan db:seed --class=TestimonialSeeder
-
-# 2. Photo galleries — images are NOT committed (binaries); they are fetched
-#    from where the export is hosted and optimised/watermarked on the server.
-#    Albums arrive UNPUBLISHED + pending approval.
 php artisan gallery:import-whatsapp --base-url=https://kamatrelocation.com/kiran/family/
 ```
 
