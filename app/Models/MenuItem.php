@@ -24,8 +24,10 @@ class MenuItem extends Model
     {
         return [
             'public.home'            => 'Home',
+            'public.activities'      => 'Activities',
             'public.gallery.index'   => 'Gallery',
             'public.blog.index'      => 'Blog',
+            'public.testimonials'    => 'Testimonials',
             'public.register.create' => 'Register',
             'public.result.form'     => 'Result Gateway',
         ];
