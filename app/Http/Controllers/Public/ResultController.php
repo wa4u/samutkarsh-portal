@@ -28,32 +28,39 @@ class ResultController extends Controller
 
         $year = config('admissions.academic_year');
 
-        $student = Student::where('center_id', $data['center_id'])
+        // A single mobile number can have more than one child (siblings) at a
+        // center — return every registration for this year so the parent can
+        // see each one by name.
+        $results = Student::where('center_id', $data['center_id'])
             ->where('phone', $data['phone'])
-            ->first();
+            ->get()
+            ->map(function (Student $student) use ($year) {
+                $registration = Registration::with('center')
+                    ->where('student_id', $student->id)
+                    ->where('academic_year', $year)
+                    ->first();
 
-        $registration = $student
-            ? Registration::with('center')
-                ->where('student_id', $student->id)
-                ->where('academic_year', $year)
-                ->first()
-            : null;
+                if (! $registration) {
+                    return null;
+                }
 
-        // Issue a short-lived signed checkout link only for a Selected seat.
-        $checkoutUrl = null;
-        if ($registration && $registration->status === 'selected') {
-            $checkoutUrl = URL::temporarySignedRoute(
-                'public.checkout',
-                now()->addHours(2),
-                ['registration' => $registration->id],
-            );
-        }
+                // Short-lived signed checkout link, only for a Selected seat.
+                $checkoutUrl = $registration->status === 'selected'
+                    ? URL::temporarySignedRoute('public.checkout', now()->addHours(2), ['registration' => $registration->id])
+                    : null;
+
+                return [
+                    'student'      => $student,
+                    'registration' => $registration,
+                    'checkoutUrl'  => $checkoutUrl,
+                ];
+            })
+            ->filter()
+            ->values();
 
         return view('public.result-status', [
-            'registration' => $registration,
-            'student'      => $student,
-            'year'         => $year,
-            'checkoutUrl'  => $checkoutUrl,
+            'results' => $results,
+            'year'    => $year,
         ]);
     }
 }

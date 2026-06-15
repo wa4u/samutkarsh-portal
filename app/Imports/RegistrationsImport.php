@@ -66,7 +66,12 @@ class RegistrationsImport implements OnEachRow, WithHeadingRow, WithValidation, 
             return;
         }
 
-        $update = ['exam_marks' => $data['exam_marks']];
+        $update = [];
+        // Marks aren't used for the admission decision, but the column is kept
+        // and updated if a value happens to be present in the sheet.
+        if (isset($data['exam_marks']) && $data['exam_marks'] !== null && $data['exam_marks'] !== '') {
+            $update['exam_marks'] = $data['exam_marks'];
+        }
         if (! empty($data['status']) && in_array($data['status'], self::ALLOWED_STATUS, true)) {
             $update['status'] = $data['status'];
         }
@@ -74,6 +79,10 @@ class RegistrationsImport implements OnEachRow, WithHeadingRow, WithValidation, 
         // Never let an import flip a paid/admitted seat back; that transition is webhook-owned.
         if ($registration->status === 'admitted') {
             unset($update['status']);
+        }
+
+        if ($update === []) {
+            return;
         }
 
         $registration->update($update);
@@ -87,7 +96,7 @@ class RegistrationsImport implements OnEachRow, WithHeadingRow, WithValidation, 
             'center_code'   => ['required', 'string'],
             'phone'         => ['required'],
             'academic_year' => ['required', 'integer', 'digits:4'],
-            'exam_marks'    => ['required', 'numeric', 'min:0', 'max:9999.99'],
+            'exam_marks'    => ['nullable', 'numeric', 'min:0', 'max:9999.99'],
             'status'        => ['nullable', 'string', 'in:' . implode(',', self::ALLOWED_STATUS)],
         ];
     }

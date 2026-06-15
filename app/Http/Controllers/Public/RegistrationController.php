@@ -42,10 +42,12 @@ class RegistrationController extends Controller
 
         try {
             DB::transaction(function () use ($data, $year) {
-                // One student record per (center, phone) — created or updated.
+                // One student per (center, phone, name) — so siblings sharing a
+                // phone are distinct people, each with their own registration.
                 $student = Student::firstOrNew([
                     'center_id' => $data['center_id'],
                     'phone'     => $data['phone'],
+                    'name'      => $data['name'],
                 ]);
                 $student->fill([
                     'name'          => $data['name'],
@@ -70,7 +72,7 @@ class RegistrationController extends Controller
             });
         } catch (DuplicateRegistrationException) {
             return back()->withInput()->withErrors([
-                'phone' => "This number is already registered at the selected center for {$year}. Use the Result Gateway to check your status.",
+                'name' => "This applicant is already registered at the selected center for {$year}. Use the Result Gateway to check the status.",
             ]);
         } catch (QueryException $e) {
             // Unique-constraint race fallback.

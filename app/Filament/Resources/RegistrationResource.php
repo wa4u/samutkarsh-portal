@@ -68,11 +68,6 @@ class RegistrationResource extends Resource
                     ->minValue(2000)
                     ->maxValue(2100),
 
-                Forms\Components\TextInput::make('exam_marks')
-                    ->numeric()
-                    ->step(0.01)
-                    ->minValue(0),
-
                 Forms\Components\Select::make('status')
                     ->options(self::$statusOptions)
                     ->default('pending')
@@ -114,10 +109,6 @@ class RegistrationResource extends Resource
                     ->visible(fn () => ! auth()->user()?->isCenterHead()),
                 Tables\Columns\TextColumn::make('academic_year')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('exam_marks')
-                    ->label('Marks')
-                    ->numeric(2)
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -140,16 +131,12 @@ class RegistrationResource extends Resource
                 // Manual score entry — gated by the score_registration permission.
                 // Row is already center-filtered, so a Head can only score their own.
                 Tables\Actions\Action::make('score')
-                    ->label('Enter Score')
+                    ->label('Set Result')
                     ->icon('heroicon-o-pencil-square')
                     ->visible(fn () => auth()->user()?->can('score_registration'))
                     ->form([
-                        Forms\Components\TextInput::make('exam_marks')
-                            ->numeric()
-                            ->step(0.01)
-                            ->minValue(0)
-                            ->required(),
                         Forms\Components\Select::make('status')
+                            ->label('Admission result')
                             ->options(self::$statusOptions)
                             ->disableOptionWhen(fn (string $value) => $value === 'admitted')
                             ->required(),
@@ -158,8 +145,7 @@ class RegistrationResource extends Resource
                             ->default(false),
                     ])
                     ->fillForm(fn (Registration $record) => [
-                        'exam_marks' => $record->exam_marks,
-                        'status'     => $record->status,
+                        'status' => $record->status,
                     ])
                     ->action(function (Registration $record, array $data): void {
                         $notify = (bool) ($data['notify_student'] ?? false);
