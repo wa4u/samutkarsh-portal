@@ -45,6 +45,18 @@ class ActivityTest extends TestCase
         $resp->assertDontSee('Raichur session');
     }
 
+    public function test_public_page_search_matches_title_and_body(): void
+    {
+        Activity::create(['date' => '2024-01-06', 'center' => 'Hubballi', 'title' => 'Yoga day celebration', 'body' => 'We did surya namaskar.', 'is_published' => true]);
+        Activity::create(['date' => '2024-01-13', 'center' => 'Raichur', 'title' => 'Debate competition', 'body' => 'Students argued well.', 'is_published' => true]);
+
+        $resp = $this->get('/activities?q=surya');
+
+        $resp->assertSuccessful();
+        $resp->assertSee('Yoga day celebration');
+        $resp->assertDontSee('Debate competition');
+    }
+
     public function test_admin_can_render_activity_resource_pages(): void
     {
         Role::findOrCreate('Trust Admin');
