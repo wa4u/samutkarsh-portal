@@ -27,6 +27,20 @@ class Testimonial extends Model
             ->latest();
     }
 
+    /**
+     * Render the message as safe HTML. Imported feedback already carries a
+     * limited tag set (<br>, <strong>, <em>); manually-typed messages are
+     * plain text, so their newlines are converted to <br>.
+     */
+    public function bodyHtml(): string
+    {
+        if (preg_match('/<(br|strong|b|em|i|p)\b/i', $this->body)) {
+            return $this->body;
+        }
+
+        return nl2br(e($this->body));
+    }
+
     public function photoUrl(): ?string
     {
         if (! $this->photo) {
