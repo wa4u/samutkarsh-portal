@@ -70,8 +70,8 @@ class HomeSectionResource extends Resource
             Forms\Components\Textarea::make('content.subtitle')->label('Subtitle')->rows(2)->visible(self::forKeys('hero')),
             Forms\Components\FileUpload::make('content.image')->label('Background image')->image()
                 ->disk('public')->directory('home')->visibility('public')->visible(self::forKeys('hero')),
-            Forms\Components\TextInput::make('content.video')->label('Background video (MP4 URL)')->url()->visible(self::forKeys('hero'))
-                ->helperText('Optional. Plays muted/looped; the image above is the poster.'),
+            Forms\Components\TextInput::make('content.video')->label('Background video (YouTube link or MP4 URL)')->url()->visible(self::forKeys('hero'))
+                ->helperText('Optional. Paste a YouTube link or an .mp4 URL — plays muted & looped. For MP4 the image above is the poster.'),
             Forms\Components\TextInput::make('content.cta_explore')->label('“Explore” button label')->visible(self::forKeys('hero')),
             Forms\Components\TextInput::make('content.cta_status')->label('“Check status” button label')->visible(self::forKeys('hero')),
 
