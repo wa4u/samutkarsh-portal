@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Models\Gallery;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class ActivityController extends Controller
 {
@@ -50,6 +51,16 @@ class ActivityController extends Controller
             'activeCenter' => $request->string('center')->toString(),
             'activeYear'   => $request->string('year')->toString(),
             'searchTerm'   => $request->string('q')->toString(),
+        ]);
+    }
+
+    public function show(Activity $activity)
+    {
+        abort_unless($activity->is_published, Response::HTTP_NOT_FOUND);
+
+        return view('public.activity-show', [
+            'activity' => $activity,
+            'gallery'  => $activity->monthGallery(),
         ]);
     }
 }

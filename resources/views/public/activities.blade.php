@@ -92,7 +92,9 @@
                                     </span>
                                 @endif
                             </div>
-                            <h2 class="mt-1.5 text-lg sm:text-xl font-bold text-slate-900 transition group-hover:text-brand-700">{{ $a->title }}</h2>
+                            <h2 class="mt-1.5 text-lg sm:text-xl font-bold text-slate-900 transition group-hover:text-brand-700">
+                                <a href="{{ route('public.activity.show', $a) }}" class="hover:underline">{{ $a->title }}</a>
+                            </h2>
 
                             {{-- Body, with a Read-more clamp for long reports --}}
                             @if ($long)

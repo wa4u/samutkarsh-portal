@@ -50,14 +50,24 @@ class ActivityResource extends Resource
                 Tables\Columns\TextColumn::make('center')->placeholder('—')->searchable()->sortable()->toggleable(),
                 Tables\Columns\TextColumn::make('title')->limit(70)->wrap()->searchable(),
                 Tables\Columns\ToggleColumn::make('is_published')->label('Published'),
+                Tables\Columns\ToggleColumn::make('is_highlight')->label('Highlight'),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_published')->label('Published'),
+                Tables\Filters\TernaryFilter::make('is_highlight')->label('Highlight'),
                 Tables\Filters\SelectFilter::make('center')->options(
                     fn () => Activity::query()->whereNotNull('center')->distinct()->orderBy('center')->pluck('center', 'center')->all()
                 ),
             ])
-            ->actions([Tables\Actions\EditAction::make()])
+            ->actions([
+                Tables\Actions\Action::make('share')
+                    ->icon('heroicon-o-share')->color('success')
+                    ->modalHeading('Share this activity')
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Close')
+                    ->modalContent(fn (Activity $record) => view('filament.activity-share', ['activity' => $record])),
+                Tables\Actions\EditAction::make(),
+            ])
             ->bulkActions([Tables\Actions\BulkActionGroup::make([
                 Tables\Actions\DeleteBulkAction::make(),
             ])]);

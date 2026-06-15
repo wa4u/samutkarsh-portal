@@ -57,6 +57,24 @@ class ActivityTest extends TestCase
         $resp->assertDontSee('Debate competition');
     }
 
+    public function test_detail_page_renders_with_og_tags_for_published(): void
+    {
+        $a = Activity::create(['date' => '2024-01-06', 'center' => 'Hubballi', 'title' => 'Yoga day', 'body' => 'We did surya namaskar today.', 'is_published' => true]);
+
+        $resp = $this->get(route('public.activity.show', $a));
+
+        $resp->assertSuccessful();
+        $resp->assertSee('Yoga day');
+        $resp->assertSee('og:title', false);
+    }
+
+    public function test_detail_page_404_for_unpublished(): void
+    {
+        $a = Activity::create(['date' => '2024-01-06', 'title' => 'Secret', 'body' => 'x', 'is_published' => false]);
+
+        $this->get(route('public.activity.show', $a))->assertNotFound();
+    }
+
     public function test_admin_can_render_activity_resource_pages(): void
     {
         Role::findOrCreate('Trust Admin');

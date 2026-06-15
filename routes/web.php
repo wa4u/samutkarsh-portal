@@ -54,6 +54,7 @@ $publicRoutes = function () {
     Route::get('/testimonials', [TestimonialController::class, 'index'])->name('public.testimonials');
 
     Route::get('/activities', [ActivityController::class, 'index'])->name('public.activities');
+    Route::get('/activities/{activity}', [ActivityController::class, 'show'])->name('public.activity.show');
 
     Route::controller(ContactController::class)->group(function () {
         Route::get('/contact', 'show')->name('public.contact');
