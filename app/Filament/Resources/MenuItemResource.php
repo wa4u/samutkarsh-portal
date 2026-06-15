@@ -73,12 +73,13 @@ class MenuItemResource extends Resource
                 ->options(['none' => 'No link (dropdown header)', 'route' => 'Internal page', 'page' => 'CMS page', 'url' => 'External URL'])
                 ->default('none')->required()->live(),
 
-            // Distinct fields (not persisted) that compose into link_value on save —
-            // avoids the same-name collision that broke the edit screen.
+            // Distinct fields that compose into link_value on save (composeLinkValue
+            // reads them, then unsets them so they never hit the DB as columns).
+            // NOTE: must stay dehydrated — dehydrated(false) would strip them from
+            // the saved data, so composeLinkValue would never see the selection.
             Forms\Components\Select::make('route_target')
                 ->label('Target page')
                 ->options(MenuItem::routeOptions())
-                ->dehydrated(false)
                 ->visible(fn (Forms\Get $get) => $get('link_type') === 'route')
                 ->required(fn (Forms\Get $get) => $get('link_type') === 'route'),
 
@@ -86,14 +87,12 @@ class MenuItemResource extends Resource
                 ->label('CMS page')
                 ->options(fn () => Page::orderBy('title')->pluck('title', 'slug'))
                 ->searchable()
-                ->dehydrated(false)
                 ->visible(fn (Forms\Get $get) => $get('link_type') === 'page')
                 ->required(fn (Forms\Get $get) => $get('link_type') === 'page'),
 
             Forms\Components\TextInput::make('url_target')
                 ->label('External URL')
                 ->url()
-                ->dehydrated(false)
                 ->visible(fn (Forms\Get $get) => $get('link_type') === 'url')
                 ->required(fn (Forms\Get $get) => $get('link_type') === 'url'),
 
