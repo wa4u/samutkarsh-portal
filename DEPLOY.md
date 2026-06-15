@@ -165,6 +165,32 @@ php artisan optimize:clear && php artisan config:cache && php artisan route:cach
 
 ---
 
+## WhatsApp archive (one-time content import)
+
+The Activities diary, testimonials, and photo galleries were curated once from
+the group's WhatsApp export. To load them on a fresh server:
+
+```bash
+# 1. Activities (214 session reports) and testimonials (16) — committed,
+#    phone-scrubbed seed data. Both arrive UNPUBLISHED for review.
+php artisan db:seed --class=ActivitySeeder
+php artisan db:seed --class=TestimonialSeeder
+
+# 2. Photo galleries — images are NOT committed (binaries); they are fetched
+#    from where the export is hosted and optimised/watermarked on the server.
+#    Albums arrive UNPUBLISHED + pending approval.
+php artisan gallery:import-whatsapp --base-url=https://kamatrelocation.com/kiran/family/
+```
+
+Then review in admin: **Content → Activities / Testimonials**, and **Galleries**
+(approve + publish the albums you want public). All three are idempotent — safe
+to re-run, and they never overwrite edits you've made.
+
+> The photo step depends on the source URL staying reachable. Run it before that
+> host goes away. Re-processing is automatic and skips albums already imported.
+
+---
+
 ## Go-live checklist
 
 - [ ] `APP_ENV=production`, `APP_DEBUG=false`, `APP_KEY` set
