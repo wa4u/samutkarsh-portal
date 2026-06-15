@@ -33,6 +33,18 @@ class ActivityTest extends TestCase
         $resp->assertDontSee('Secret draft activity');
     }
 
+    public function test_public_page_filters_by_center(): void
+    {
+        Activity::create(['date' => '2024-01-06', 'center' => 'Hubballi', 'title' => 'Hubballi session', 'body' => 'x', 'is_published' => true]);
+        Activity::create(['date' => '2024-01-13', 'center' => 'Raichur', 'title' => 'Raichur session', 'body' => 'y', 'is_published' => true]);
+
+        $resp = $this->get('/activities?center=Hubballi');
+
+        $resp->assertSuccessful();
+        $resp->assertSee('Hubballi session');
+        $resp->assertDontSee('Raichur session');
+    }
+
     public function test_admin_can_render_activity_resource_pages(): void
     {
         Role::findOrCreate('Trust Admin');
