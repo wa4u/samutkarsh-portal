@@ -11,28 +11,33 @@
             <p class="mt-3 text-slate-600 max-w-2xl">{{ $gallery->description }}</p>
         @endif
 
-        <div class="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        <div class="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-3 gap-y-5">
             @foreach ($gallery->items as $item)
-                @if ($item->type === 'image')
-                    <button type="button"
-                            class="js-lightbox group relative aspect-square overflow-hidden rounded-lg bg-slate-100 ring-1 ring-slate-200"
-                            data-type="image" data-src="{{ $item->displayUrl() }}" data-caption="{{ $item->caption }}">
-                        <img src="{{ $item->thumbUrl() }}" alt="{{ $item->caption }}" loading="lazy"
-                             class="h-full w-full object-cover group-hover:scale-105 transition duration-300">
-                    </button>
-                @else
-                    <button type="button"
-                            class="js-lightbox group relative aspect-square overflow-hidden rounded-lg bg-slate-900 ring-1 ring-slate-200"
-                            data-type="youtube" data-src="{{ $item->youtubeEmbedUrl() }}" data-caption="{{ $item->caption }}">
-                        <img src="{{ $item->youtubeThumbUrl() }}" alt="{{ $item->caption }}" loading="lazy"
-                             class="h-full w-full object-cover opacity-80 group-hover:opacity-100 transition">
-                        <span class="absolute inset-0 flex items-center justify-center">
-                            <span class="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow">
-                                <svg class="h-6 w-6 text-red-600 translate-x-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <figure>
+                    @if ($item->type === 'image')
+                        <button type="button"
+                                class="js-lightbox group relative block aspect-square w-full overflow-hidden rounded-lg bg-slate-100 ring-1 ring-slate-200"
+                                data-type="image" data-src="{{ $item->displayUrl() }}" data-caption="{{ $item->caption }}">
+                            <img src="{{ $item->thumbUrl() }}" alt="{{ $item->caption }}" loading="lazy"
+                                 class="h-full w-full object-cover group-hover:scale-105 transition duration-300">
+                        </button>
+                    @else
+                        <button type="button"
+                                class="js-lightbox group relative block aspect-square w-full overflow-hidden rounded-lg bg-slate-900 ring-1 ring-slate-200"
+                                data-type="youtube" data-src="{{ $item->youtubeEmbedUrl() }}" data-caption="{{ $item->caption }}">
+                            <img src="{{ $item->youtubeThumbUrl() }}" alt="{{ $item->caption }}" loading="lazy"
+                                 class="h-full w-full object-cover opacity-80 group-hover:opacity-100 transition">
+                            <span class="absolute inset-0 flex items-center justify-center">
+                                <span class="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow">
+                                    <svg class="h-6 w-6 text-red-600 translate-x-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </span>
                             </span>
-                        </span>
-                    </button>
-                @endif
+                        </button>
+                    @endif
+                    @if ($item->caption)
+                        <figcaption class="mt-1.5 text-xs leading-snug text-slate-600">{{ $item->caption }}</figcaption>
+                    @endif
+                </figure>
             @endforeach
         </div>
     </div>
