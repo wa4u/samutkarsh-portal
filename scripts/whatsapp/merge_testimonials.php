@@ -1,7 +1,8 @@
 <?php
 // Throwaway: merge feedback out_*.json, join with parsed messages, scrub phone
 // numbers, and write a committable testimonials seed.
-$dir = __DIR__ . '/storage/app/private/whatsapp';
+$root = dirname(__DIR__, 2); // project root from scripts/whatsapp/
+$dir = $root . '/storage/app/private/whatsapp';
 $messages = [];
 foreach (json_decode(file_get_contents("$dir/messages.json"), true) as $m) {
     $messages[$m['idx']] = $m;
@@ -34,6 +35,7 @@ for ($i = 0; $i < 10; $i++) {
         $rows[] = [
             'author_name' => scrub($name),
             'role'        => $role,
+            'center'      => trim((string) ($fb['center'] ?? '')) ?: null,
             'event'       => trim((string) ($fb['event'] ?? '')) ?: null,
             'body'        => scrub($m['text']),
             'source_hash' => md5($m['date'] . '|' . $m['sender_raw'] . '|' . $m['plain']),
@@ -45,7 +47,7 @@ for ($i = 0; $i < 10; $i++) {
 // Stable order: oldest first.
 usort($rows, fn ($a, $b) => strcmp($a['date'], $b['date']));
 
-$out = __DIR__ . '/database/seeders/data';
+$out = $root . '/database/seeders/data';
 @mkdir($out, 0777, true);
 file_put_contents("$out/testimonials.json",
     json_encode($rows, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));

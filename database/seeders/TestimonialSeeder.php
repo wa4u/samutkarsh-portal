@@ -33,13 +33,21 @@ class TestimonialSeeder extends Seeder
 
             $t = Testimonial::firstOrNew(['source_hash' => $r['source_hash']]);
             if ($t->exists) {
+                // Backfill newly-added fields only if missing — never touch the
+                // body or the admin's publish / feature decisions.
+                $dirty = false;
+                if (blank($t->center) && filled($r['center'] ?? null)) { $t->center = $r['center']; $dirty = true; }
+                if (blank($t->date) && filled($r['date'] ?? null)) { $t->date = $r['date']; $dirty = true; }
+                if ($dirty) { $t->save(); }
                 continue;
             }
 
             $t->fill([
                 'author_name'  => $r['author_name'],
                 'role'         => $r['role'] ?? null,
+                'center'       => $r['center'] ?? null,
                 'event'        => $r['event'] ?? null,
+                'date'         => $r['date'] ?? null,
                 'body'         => $r['body'],
                 'is_published' => false,
                 'is_featured'  => false,

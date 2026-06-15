@@ -1,7 +1,8 @@
 <?php
 // Throwaway: build a committable gallery manifest (dates + image filenames,
 // NO phone data) from the parsed messages, grouping photos by date.
-$dir = __DIR__ . '/storage/app/private/whatsapp';
+$root = dirname(__DIR__, 2); // project root from scripts/whatsapp/
+$dir = $root . '/storage/app/private/whatsapp';
 $messages = json_decode(file_get_contents("$dir/messages.json"), true);
 
 // Group photos by calendar month (date-level albums were too fragmented).
@@ -38,7 +39,7 @@ foreach ($byMonth as $ym => $files) {
     $totalImgs += count($files);
 }
 
-$out = __DIR__ . '/database/seeders/data';
+$out = $root . '/database/seeders/data';
 @mkdir($out, 0777, true);
 file_put_contents("$out/gallery_manifest.json",
     json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));

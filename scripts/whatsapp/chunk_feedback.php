@@ -1,6 +1,7 @@
 <?php
 // Throwaway: split candidates into chunks (full text) for feedback classification.
-$dir = __DIR__ . '/storage/app/private/whatsapp';
+$root = dirname(__DIR__, 2); // project root from scripts/whatsapp/
+$dir = $root . '/storage/app/private/whatsapp';
 $cands = json_decode(file_get_contents("$dir/candidates.json"), true);
 @mkdir("$dir/fb", 0777, true);
 

@@ -57,7 +57,9 @@ class ImportWhatsappTestimonials extends Command
                 [
                     'author_name'  => $name,
                     'role'         => $r['role'] ?? null,
+                    'center'       => $r['center'] ?? null,
                     'event'        => $r['event'] ?? null,
+                    'date'         => $r['date'] ?? null,
                     'body'         => $body,
                     'is_published' => (bool) $this->option('publish'),
                     'is_featured'  => $existing->is_featured ?? false,

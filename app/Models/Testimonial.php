@@ -9,10 +9,11 @@ use Illuminate\Support\Facades\Storage;
 class Testimonial extends Model
 {
     protected $fillable = [
-        'author_name', 'role', 'body', 'event', 'photo', 'source_hash', 'is_published', 'is_featured', 'sort',
+        'author_name', 'role', 'center', 'body', 'event', 'date', 'photo', 'source_hash', 'is_published', 'is_featured', 'sort',
     ];
 
     protected $casts = [
+        'date'         => 'date',
         'is_published' => 'boolean',
         'is_featured'  => 'boolean',
     ];

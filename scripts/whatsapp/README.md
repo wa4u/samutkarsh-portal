@@ -41,6 +41,9 @@ step in between. They read/write under `storage/app/private/whatsapp/`.
 4. Testimonials: `php scripts/whatsapp/chunk_feedback.php` → classify → 
    `php scripts/whatsapp/merge_testimonials.php` → 
    `php artisan testimonials:import-whatsapp`
+   (Classification should extract `author_name`, `role`, `event` AND `center`.
+   Testimonials carry `center` + `date`, so the public page filters by centre
+   and year — same as Activities. `date` comes from the message timestamp.)
 5. Photos: `php scripts/whatsapp/gen_gallery_manifest.php` → 
    `php artisan gallery:import-whatsapp --base-url=<where the images are hosted>`
 

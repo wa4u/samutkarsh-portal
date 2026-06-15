@@ -28,6 +28,8 @@ class TestimonialResource extends Resource
         return $form->schema([
             Forms\Components\TextInput::make('author_name')->label('Name')->required()->maxLength(255),
             Forms\Components\TextInput::make('role')->label('Role / relation')->placeholder('Parent, Student…')->maxLength(255),
+            Forms\Components\TextInput::make('center')->label('Centre')->placeholder('Hubballi, Belagavi North…')->maxLength(255),
+            Forms\Components\DatePicker::make('date')->label('Date (optional)')->native(false),
             Forms\Components\Textarea::make('body')->label('Message')->required()->rows(5)
                 ->helperText('Paste the message as-is (any language).')->columnSpanFull(),
             Forms\Components\TextInput::make('event')->label('Event / programme (optional)')->placeholder('Village Visit 2025'),
@@ -46,13 +48,19 @@ class TestimonialResource extends Resource
             ->reorderable('sort')
             ->columns([
                 Tables\Columns\TextColumn::make('author_name')->label('Name')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('center')->placeholder('—')->searchable()->toggleable(),
                 Tables\Columns\TextColumn::make('body')->limit(60)->wrap()->label('Message'),
+                Tables\Columns\TextColumn::make('date')->date('M Y')->placeholder('—')->sortable()->toggleable(),
                 Tables\Columns\TextColumn::make('event')->placeholder('—')->toggleable(),
                 Tables\Columns\IconColumn::make('is_featured')->label('Home')->boolean(),
                 Tables\Columns\ToggleColumn::make('is_published')->label('Published'),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_featured')->label('Featured'),
+                Tables\Filters\TernaryFilter::make('is_published')->label('Published'),
+                Tables\Filters\SelectFilter::make('center')->options(
+                    fn () => Testimonial::query()->whereNotNull('center')->distinct()->orderBy('center')->pluck('center', 'center')->all()
+                ),
             ])
             ->actions([Tables\Actions\EditAction::make()])
             ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
