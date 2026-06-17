@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Center extends Model
 {
     protected $fillable = [
-        'name', 'code', 'city', 'contact_phone', 'contact_email', 'address',
+        'name', 'code', 'city', 'contact_phone', 'contact_email', 'contact_timing', 'holiday_info', 'address',
         'is_active', 'is_physical', 'is_head_office', 'sort',
     ];
 

@@ -41,6 +41,15 @@ class CenterResource extends Resource
                 Forms\Components\TextInput::make('contact_email')
                     ->email()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('contact_timing')
+                    ->label('Contact timing')
+                    ->placeholder('Mon–Sat, 10 AM – 6 PM')
+                    ->maxLength(255)
+                    ->helperText('Shown on the Contact page for this centre.'),
+                Forms\Components\Textarea::make('holiday_info')
+                    ->label('Holiday information')
+                    ->rows(2)
+                    ->helperText('Optional — typically set on the Head Office (e.g. Sunday timings/holidays).'),
                 Forms\Components\Textarea::make('address')
                     ->columnSpanFull(),
                 Forms\Components\Toggle::make('is_active')

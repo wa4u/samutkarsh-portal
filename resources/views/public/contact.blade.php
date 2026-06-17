@@ -35,8 +35,6 @@
                         </h2>
                         @if ($center->is_physical && $center->address)
                             <p class="mt-2 text-sm text-slate-600">{{ $center->address }}</p>
-                        @else
-                            <p class="mt-2 text-sm text-slate-500">Online — reachable by phone.</p>
                         @endif
                         @if ($center->contact_phone)
                             <p class="mt-1 text-sm text-slate-600">Phone:
@@ -45,6 +43,17 @@
                         @endif
                         @if ($center->contact_email)
                             <p class="text-sm text-slate-600">Email: <a href="mailto:{{ $center->contact_email }}" class="text-indigo-600">{{ $center->contact_email }}</a></p>
+                        @endif
+                        @if ($center->contact_timing)
+                            <p class="mt-2 flex items-start gap-1.5 text-sm text-slate-600">
+                                <svg class="mt-0.5 h-4 w-4 shrink-0 text-brand-500" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                                <span><span class="font-medium text-slate-700">Timing:</span> {{ $center->contact_timing }}</span>
+                            </p>
+                        @endif
+                        @if ($center->holiday_info)
+                            <p class="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800 ring-1 ring-amber-100">
+                                <span class="font-semibold">Holidays:</span> {{ $center->holiday_info }}
+                            </p>
                         @endif
                     </div>
                 @empty
