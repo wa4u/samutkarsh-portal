@@ -23,11 +23,14 @@ class RegistrationEmailsTest extends TestCase
         $center = Center::create(['name' => 'Hubballi', 'code' => 'HBL', 'city' => 'Hubballi', 'is_active' => true, 'contact_email' => 'centre@example.com']);
 
         $this->post('/register', [
-            'center_id' => $center->id,
-            'name'      => 'Asha Kumar',
-            'phone'     => '9876543210',
-            'email'     => 'asha@example.com',
+            'center_id'     => $center->id,
+            'name'          => 'Asha Kumar',
+            'phone'         => '9876543210',
+            'email'         => 'asha@example.com',
+            'student_class' => '7',
         ])->assertRedirect(route('public.register.success'));
+
+        $this->assertDatabaseHas('students', ['name' => 'Asha Kumar', 'student_class' => '7']);
 
         // HO + centre (distinct addresses) → 2 admin mails.
         Mail::assertQueued(RegistrationReceivedAdmin::class, 2);
@@ -43,9 +46,10 @@ class RegistrationEmailsTest extends TestCase
         $center = Center::create(['name' => 'Raichur', 'code' => 'RCR', 'city' => 'Raichur', 'is_active' => true]);
 
         $this->post('/register', [
-            'center_id' => $center->id,
-            'name'      => 'No Email Kid',
-            'phone'     => '9876500000',
+            'center_id'     => $center->id,
+            'name'          => 'No Email Kid',
+            'phone'         => '9876500000',
+            'student_class' => 'college',
         ])->assertRedirect(route('public.register.success'));
 
         Mail::assertNotQueued(RegistrationReceivedStudent::class);

@@ -59,6 +59,10 @@ class StudentResource extends Resource
                 Forms\Components\Select::make('gender')
                     ->options(['male' => 'Male', 'female' => 'Female', 'other' => 'Other']),
 
+                Forms\Components\Select::make('student_class')
+                    ->label('Class')
+                    ->options(Student::CLASSES),
+
                 Forms\Components\TextInput::make('guardian_name')
                     ->maxLength(255),
 
@@ -95,6 +99,11 @@ class StudentResource extends Resource
                     ->visible(fn () => ! auth()->user()?->isCenterHead()),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('student_class')
+                    ->label('Class')
+                    ->badge()
+                    ->formatStateUsing(fn (?string $state) => Student::CLASSES[$state] ?? $state)
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
@@ -112,6 +121,9 @@ class StudentResource extends Resource
                 Tables\Filters\SelectFilter::make('center_id')
                     ->relationship('center', 'name')
                     ->visible(fn () => ! auth()->user()?->isCenterHead()),
+                Tables\Filters\SelectFilter::make('student_class')
+                    ->label('Class')
+                    ->options(Student::CLASSES),
             ])
             ->headerActions([
                 Tables\Actions\Action::make('export')
@@ -124,6 +136,10 @@ class StudentResource extends Resource
                             ->label('Centre')
                             ->placeholder('All centres')
                             ->options(Center::orderBy('name')->pluck('name', 'id')),
+                        Forms\Components\Select::make('student_class')
+                            ->label('Class')
+                            ->placeholder('All classes')
+                            ->options(Student::CLASSES),
                         Forms\Components\DatePicker::make('from')->label('Registered from')->native(false),
                         Forms\Components\DatePicker::make('to')->label('Registered to')->native(false)
                             ->helperText('Leave the dates blank to export everything.'),
@@ -132,6 +148,7 @@ class StudentResource extends Resource
                         'admin.students.export',
                         array_filter([
                             'center' => $data['center_id'] ?? null,
+                            'class'  => $data['student_class'] ?? null,
                             'from'   => $data['from'] ?? null,
                             'to'     => $data['to'] ?? null,
                         ]),

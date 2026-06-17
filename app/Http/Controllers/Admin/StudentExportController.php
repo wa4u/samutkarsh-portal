@@ -24,6 +24,10 @@ class StudentExportController extends Controller
             $query->where('center_id', $request->integer('center'));
         }
 
+        if ($request->filled('class')) {
+            $query->where('student_class', $request->string('class'));
+        }
+
         // Registration-date range (on the "Registered on" date), inclusive.
         if ($request->filled('from')) {
             $query->whereDate('created_at', '>=', $request->date('from'));
@@ -37,7 +41,7 @@ class StudentExportController extends Controller
         return response()->streamDownload(function () use ($query) {
             $out = fopen('php://output', 'w');
             fwrite($out, "\xEF\xBB\xBF"); // BOM so Excel reads Unicode (Kannada) names
-            fputcsv($out, ['Centre', 'Name', 'Phone', 'Email', 'Date of birth', 'Gender', 'Guardian', 'Registered on', 'Latest year', 'Latest status']);
+            fputcsv($out, ['Centre', 'Name', 'Class', 'Phone', 'Email', 'Date of birth', 'Gender', 'Guardian', 'Registered on', 'Latest year', 'Latest status']);
 
             $query->chunk(500, function ($students) use ($out) {
                 foreach ($students as $s) {
@@ -45,6 +49,7 @@ class StudentExportController extends Controller
                     fputcsv($out, [
                         $s->center?->name,
                         $s->name,
+                        $s->classLabel(),
                         $s->phone,
                         $s->email,
                         optional($s->dob)->format('Y-m-d'),

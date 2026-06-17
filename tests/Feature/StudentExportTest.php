@@ -57,6 +57,23 @@ class StudentExportTest extends TestCase
         $this->assertStringNotContainsString('Old Student', $body);
     }
 
+    public function test_filters_by_class(): void
+    {
+        Role::findOrCreate('Trust Admin');
+        $admin = User::factory()->create();
+        $admin->assignRole('Trust Admin');
+
+        $c = Center::create(['name' => 'Hubballi', 'code' => 'HBL', 'city' => 'Hubballi', 'is_active' => true]);
+        Student::create(['center_id' => $c->id, 'name' => 'Sixth Kid', 'phone' => '9000000003', 'student_class' => '6']);
+        Student::create(['center_id' => $c->id, 'name' => 'College Kid', 'phone' => '9000000004', 'student_class' => 'college']);
+
+        $body = $this->actingAs($admin)->get(route('admin.students.export', ['class' => '6']))->streamedContent();
+
+        $this->assertStringContainsString('Sixth Kid', $body);
+        $this->assertStringContainsString('Class 6', $body);   // label, not raw code
+        $this->assertStringNotContainsString('College Kid', $body);
+    }
+
     public function test_guest_cannot_download(): void
     {
         $this->get(route('admin.students.export'))->assertForbidden();

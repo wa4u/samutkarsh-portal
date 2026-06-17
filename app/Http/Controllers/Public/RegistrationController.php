@@ -36,11 +36,13 @@ class RegistrationController extends Controller
             'name'          => ['required', 'string', 'max:255'],
             'phone'         => ['required', 'regex:/^[6-9]\d{9}$/'],   // Indian 10-digit mobile
             'email'         => ['nullable', 'email', 'max:255'],
+            'student_class' => ['required', 'in:' . implode(',', array_keys(Student::CLASSES))],
             'dob'           => ['nullable', 'date', 'before:today'],
             'gender'        => ['nullable', 'in:male,female,other'],
             'guardian_name' => ['nullable', 'string', 'max:255'],
         ], [
-            'phone.regex' => 'Enter a valid 10-digit mobile number.',
+            'phone.regex'           => 'Enter a valid 10-digit mobile number.',
+            'student_class.required' => 'Please select the class.',
         ]);
 
         $year = config('admissions.academic_year');
@@ -58,6 +60,7 @@ class RegistrationController extends Controller
                 $student->fill([
                     'name'          => $data['name'],
                     'email'         => $data['email'] ?? $student->email,
+                    'student_class' => $data['student_class'],
                     'dob'           => $data['dob'] ?? $student->dob,
                     'gender'        => $data['gender'] ?? $student->gender,
                     'guardian_name' => $data['guardian_name'] ?? $student->guardian_name,

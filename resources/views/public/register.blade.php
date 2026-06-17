@@ -62,6 +62,16 @@
 
             <div class="grid gap-5 sm:grid-cols-2">
                 <div>
+                    <label class="block text-sm font-medium text-slate-700">Class <span class="text-red-500">*</span></label>
+                    <select name="student_class" required
+                            class="mt-1 w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">— Select class —</option>
+                        @foreach (\App\Models\Student::CLASSES as $v => $l)
+                            <option value="{{ $v }}" @selected(old('student_class') === $v)>{{ $l }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
                     <label class="block text-sm font-medium text-slate-700">Gender</label>
                     <select name="gender"
                             class="mt-1 w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
@@ -71,11 +81,12 @@
                         @endforeach
                     </select>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-700">Guardian name</label>
-                    <input type="text" name="guardian_name" value="{{ old('guardian_name') }}"
-                           class="mt-1 w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700">Guardian name</label>
+                <input type="text" name="guardian_name" value="{{ old('guardian_name') }}"
+                       class="mt-1 w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
             </div>
 
             <button type="submit"
