@@ -84,8 +84,8 @@
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-slate-700">Guardian name</label>
-                <input type="text" name="guardian_name" value="{{ old('guardian_name') }}"
+                <label class="block text-sm font-medium text-slate-700">School / College name</label>
+                <input type="text" name="school_name" value="{{ old('school_name') }}"
                        class="mt-1 w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
             </div>
 

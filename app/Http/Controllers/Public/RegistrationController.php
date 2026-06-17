@@ -39,7 +39,7 @@ class RegistrationController extends Controller
             'student_class' => ['required', 'in:' . implode(',', array_keys(Student::CLASSES))],
             'dob'           => ['nullable', 'date', 'before:today'],
             'gender'        => ['nullable', 'in:male,female,other'],
-            'guardian_name' => ['nullable', 'string', 'max:255'],
+            'school_name'   => ['nullable', 'string', 'max:255'],
         ], [
             'phone.regex'           => 'Enter a valid 10-digit mobile number.',
             'student_class.required' => 'Please select the class.',
@@ -63,7 +63,7 @@ class RegistrationController extends Controller
                     'student_class' => $data['student_class'],
                     'dob'           => $data['dob'] ?? $student->dob,
                     'gender'        => $data['gender'] ?? $student->gender,
-                    'guardian_name' => $data['guardian_name'] ?? $student->guardian_name,
+                    'school_name'   => $data['school_name'] ?? $student->school_name,
                 ])->save();
 
                 // Composite unique (center_id, student_id, academic_year) blocks duplicates;

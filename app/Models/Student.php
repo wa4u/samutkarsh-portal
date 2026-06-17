@@ -22,7 +22,7 @@ class Student extends Model
 
     protected $fillable = [
         'center_id', 'name', 'phone', 'email', 'dob', 'gender', 'student_class',
-        'address', 'guardian_name', 'biometric_id', 'photo_path', 'meta',
+        'address', 'guardian_name', 'school_name', 'biometric_id', 'photo_path', 'meta',
     ];
 
     protected $casts = [

@@ -41,7 +41,7 @@ class StudentExportController extends Controller
         return response()->streamDownload(function () use ($query) {
             $out = fopen('php://output', 'w');
             fwrite($out, "\xEF\xBB\xBF"); // BOM so Excel reads Unicode (Kannada) names
-            fputcsv($out, ['Centre', 'Name', 'Class', 'Phone', 'Email', 'Date of birth', 'Gender', 'Guardian', 'Registered on', 'Latest year', 'Latest status']);
+            fputcsv($out, ['Centre', 'Name', 'Class', 'Phone', 'Email', 'Date of birth', 'Gender', 'School / College', 'Guardian', 'Registered on', 'Latest year', 'Latest status']);
 
             $query->chunk(500, function ($students) use ($out) {
                 foreach ($students as $s) {
@@ -54,6 +54,7 @@ class StudentExportController extends Controller
                         $s->email,
                         optional($s->dob)->format('Y-m-d'),
                         $s->gender,
+                        $s->school_name,
                         $s->guardian_name,
                         optional($s->created_at)->format('Y-m-d'),
                         $reg?->academic_year,

@@ -28,9 +28,10 @@ class RegistrationEmailsTest extends TestCase
             'phone'         => '9876543210',
             'email'         => 'asha@example.com',
             'student_class' => '7',
+            'school_name'   => 'St. Xavier School',
         ])->assertRedirect(route('public.register.success'));
 
-        $this->assertDatabaseHas('students', ['name' => 'Asha Kumar', 'student_class' => '7']);
+        $this->assertDatabaseHas('students', ['name' => 'Asha Kumar', 'student_class' => '7', 'school_name' => 'St. Xavier School']);
 
         // HO + centre (distinct addresses) → 2 admin mails.
         Mail::assertQueued(RegistrationReceivedAdmin::class, 2);

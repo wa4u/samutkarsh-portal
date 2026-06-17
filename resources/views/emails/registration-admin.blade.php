@@ -5,6 +5,7 @@ A new applicant has registered for **{{ $year }}**.
 
 **Name:** {{ $student->name }}
 **Class:** {{ $student->classLabel() ?: '—' }}
+**School / College:** {{ $student->school_name ?: '—' }}
 **Centre:** {{ $center->name }}
 **Phone:** {{ $student->phone }}
 **Email:** {{ $student->email ?: '—' }}

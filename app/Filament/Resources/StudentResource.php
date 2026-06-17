@@ -63,6 +63,10 @@ class StudentResource extends Resource
                     ->label('Class')
                     ->options(Student::CLASSES),
 
+                Forms\Components\TextInput::make('school_name')
+                    ->label('School / College')
+                    ->maxLength(255),
+
                 Forms\Components\TextInput::make('guardian_name')
                     ->maxLength(255),
 
@@ -107,6 +111,10 @@ class StudentResource extends Resource
                 Tables\Columns\TextColumn::make('phone')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
+                    ->searchable()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('school_name')
+                    ->label('School / College')
                     ->searchable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('guardian_name')
