@@ -118,16 +118,23 @@ class StudentResource extends Resource
                     ->label('Download CSV')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('gray')
-                    // Centre Heads are locked to their own centre (no chooser).
-                    ->form(fn () => auth()->user()?->isCenterHead() ? [] : [
-                        Forms\Components\Select::make('center_id')
+                    ->form(fn () => array_values(array_filter([
+                        // Centre Heads are locked to their own centre (no chooser).
+                        auth()->user()?->isCenterHead() ? null : Forms\Components\Select::make('center_id')
                             ->label('Centre')
                             ->placeholder('All centres')
                             ->options(Center::orderBy('name')->pluck('name', 'id')),
-                    ])
+                        Forms\Components\DatePicker::make('from')->label('Registered from')->native(false),
+                        Forms\Components\DatePicker::make('to')->label('Registered to')->native(false)
+                            ->helperText('Leave the dates blank to export everything.'),
+                    ])))
                     ->action(fn (array $data) => redirect()->route(
                         'admin.students.export',
-                        array_filter(['center' => $data['center_id'] ?? null]),
+                        array_filter([
+                            'center' => $data['center_id'] ?? null,
+                            'from'   => $data['from'] ?? null,
+                            'to'     => $data['to'] ?? null,
+                        ]),
                     )),
             ])
             ->actions([

@@ -24,6 +24,14 @@ class StudentExportController extends Controller
             $query->where('center_id', $request->integer('center'));
         }
 
+        // Registration-date range (on the "Registered on" date), inclusive.
+        if ($request->filled('from')) {
+            $query->whereDate('created_at', '>=', $request->date('from'));
+        }
+        if ($request->filled('to')) {
+            $query->whereDate('created_at', '<=', $request->date('to'));
+        }
+
         $filename = 'students-' . now()->format('Ymd-His') . '.csv';
 
         return response()->streamDownload(function () use ($query) {
