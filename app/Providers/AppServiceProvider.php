@@ -45,7 +45,7 @@ class AppServiceProvider extends ServiceProvider
                 return $path;
             }
             $p = '/' . ltrim($path, '/');
-            foreach (['/checkout', '/payments', '/admin', '/livewire', '/storage', '/sitemap.xml', '/robots.txt', '/__setup'] as $ex) {
+            foreach (['/checkout', '/payments', '/admin', '/exports', '/livewire', '/storage', '/sitemap.xml', '/robots.txt', '/__setup'] as $ex) {
                 if ($p === $ex || str_starts_with($p, $ex . '/')) {
                     return $path;
                 }

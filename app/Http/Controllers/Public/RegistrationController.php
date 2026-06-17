@@ -3,12 +3,17 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Mail\RegistrationReceivedAdmin;
+use App\Mail\RegistrationReceivedStudent;
 use App\Models\Center;
 use App\Models\Registration;
+use App\Models\Setting;
 use App\Models\Student;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class RegistrationController extends Controller
 {
@@ -39,9 +44,10 @@ class RegistrationController extends Controller
         ]);
 
         $year = config('admissions.academic_year');
+        $student = null;
 
         try {
-            DB::transaction(function () use ($data, $year) {
+            DB::transaction(function () use ($data, $year, &$student) {
                 // One student per (center, phone, name) — so siblings sharing a
                 // phone are distinct people, each with their own registration.
                 $student = Student::firstOrNew([
@@ -70,6 +76,8 @@ class RegistrationController extends Controller
                     'status'        => 'pending',
                 ]);
             });
+
+            $this->sendNotifications($student, $year);
         } catch (DuplicateRegistrationException) {
             return back()->withInput()->withErrors([
                 'name' => "This applicant is already registered at the selected center for {$year}. Use the Result Gateway to check the status.",
@@ -88,6 +96,35 @@ class RegistrationController extends Controller
     public function success()
     {
         return view('public.register-success', ['year' => config('admissions.academic_year')]);
+    }
+
+    /**
+     * Send the three registration emails: Head Office, the centre, and the
+     * applicant. Mail failures must never break the registration, so the whole
+     * block is guarded and logged.
+     */
+    protected function sendNotifications(Student $student, string $year): void
+    {
+        try {
+            $center = $student->center ?: Center::find($student->center_id);
+            if (! $center) {
+                return;
+            }
+
+            $ho = Setting::get('notify.registration_email') ?: Setting::get('contact.email');
+
+            if ($ho) {
+                Mail::to($ho)->send(new RegistrationReceivedAdmin($student, $center, $year));
+            }
+            if ($center->contact_email && $center->contact_email !== $ho) {
+                Mail::to($center->contact_email)->send(new RegistrationReceivedAdmin($student, $center, $year));
+            }
+            if ($student->email) {
+                Mail::to($student->email)->send(new RegistrationReceivedStudent($student, $center, $year));
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Registration emails failed: ' . $e->getMessage());
+        }
     }
 }
 

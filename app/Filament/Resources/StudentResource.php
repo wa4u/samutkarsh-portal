@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Concerns\ScopesToCenter;
 use App\Filament\Resources\StudentResource\Pages;
+use App\Models\Center;
 use App\Models\Student;
 use App\Services\ImageProcessor;
 use Filament\Forms;
@@ -111,6 +112,23 @@ class StudentResource extends Resource
                 Tables\Filters\SelectFilter::make('center_id')
                     ->relationship('center', 'name')
                     ->visible(fn () => ! auth()->user()?->isCenterHead()),
+            ])
+            ->headerActions([
+                Tables\Actions\Action::make('export')
+                    ->label('Download CSV')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('gray')
+                    // Centre Heads are locked to their own centre (no chooser).
+                    ->form(fn () => auth()->user()?->isCenterHead() ? [] : [
+                        Forms\Components\Select::make('center_id')
+                            ->label('Centre')
+                            ->placeholder('All centres')
+                            ->options(Center::orderBy('name')->pluck('name', 'id')),
+                    ])
+                    ->action(fn (array $data) => redirect()->route(
+                        'admin.students.export',
+                        array_filter(['center' => $data['center_id'] ?? null]),
+                    )),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

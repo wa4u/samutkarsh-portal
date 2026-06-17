@@ -80,6 +80,11 @@ Route::controller(CheckoutController::class)->group(function () {
 Route::post('/payments/webhook/{gateway}', [PaymentWebhookController::class, 'handle'])
     ->name('payments.webhook');
 
+// Admin CSV export (English-only, never localized). The controller aborts 403
+// for guests — avoids the 'auth' middleware's redirect to a non-existent login route.
+Route::get('/exports/students', [\App\Http\Controllers\Admin\StudentExportController::class, 'students'])
+    ->name('admin.students.export');
+
 // One-time web installer for no-CLI hosts.
 Route::get('/__setup', InstallController::class)->name('app.setup');
 
