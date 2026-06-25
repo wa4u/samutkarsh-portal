@@ -50,6 +50,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    {{-- Google Analytics (gtag.js) — Measurement ID is admin-editable: Settings → site.ga_id (blank disables). --}}
+    @php($gaId = trim((string) Setting::get('site.ga_id', 'G-TDYG1WK6KY')))
+    @if ($gaId)
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ urlencode($gaId) }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', @json($gaId));
+        </script>
+    @endif
+
     <title>@yield('title', 'Samutkarsh IAS Academy')</title>
 
     {{-- Favicons --}}
