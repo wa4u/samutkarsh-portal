@@ -10,7 +10,7 @@ class HomeSection extends Model
 
     protected $casts = ['is_enabled' => 'boolean', 'content' => 'array'];
 
-    public const DEFAULT_ORDER = ['hero', 'audience', 'programmes', 'why', 'testimonials', 'blog', 'cta'];
+    public const DEFAULT_ORDER = ['hero', 'exam', 'audience', 'programmes', 'why', 'testimonials', 'blog', 'cta'];
 
     /**
      * Enabled sections in order as [key => content array]. Falls back to the
