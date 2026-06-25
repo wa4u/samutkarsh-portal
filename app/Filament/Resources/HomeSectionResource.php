@@ -58,11 +58,23 @@ class HomeSectionResource extends Resource
 
             // Shared text
             Forms\Components\TextInput::make('content.heading')->label('Heading')
-                ->visible(self::forKeys('why', 'programmes', 'cta', 'blog', 'testimonials')),
+                ->visible(self::forKeys('why', 'programmes', 'cta', 'blog', 'testimonials', 'exam')),
             Forms\Components\Textarea::make('content.body')->label('Paragraph / text')->rows(4)
                 ->visible(self::forKeys('why', 'cta')),
             Forms\Components\Textarea::make('content.intro')->label('Intro')->rows(2)
-                ->visible(self::forKeys('programmes', 'testimonials')),
+                ->visible(self::forKeys('programmes', 'testimonials', 'exam')),
+
+            // Exam schedule banner
+            Forms\Components\TextInput::make('content.reporting')->label('Reporting time')->visible(self::forKeys('exam'))
+                ->placeholder('9:30 AM'),
+            Forms\Components\TextInput::make('content.exam_time')->label('Exam time')->visible(self::forKeys('exam'))
+                ->placeholder('10:00 AM to 12:00 PM'),
+            Forms\Components\TextInput::make('content.note')->label('Note (optional)')->visible(self::forKeys('exam')),
+            Forms\Components\Repeater::make('content.centres')->label('Centres & dates')->visible(self::forKeys('exam'))
+                ->schema([
+                    Forms\Components\TextInput::make('name')->label('Centre')->required(),
+                    Forms\Components\TextInput::make('dates')->label('Exam date(s)')->required(),
+                ])->columns(2)->reorderable()->collapsible()->itemLabel(fn (array $state) => $state['name'] ?? 'Centre'),
 
             // Hero
             Forms\Components\TextInput::make('content.badge')->label('Badge text')->visible(self::forKeys('hero')),
