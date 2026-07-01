@@ -19,6 +19,8 @@
         Setting::get('social.facebook'), Setting::get('social.instagram'), Setting::get('social.youtube'),
     ]));
     $seoDesc  = trim(strip_tags((string) Setting::get('site.hero_subtitle', 'Nation Building through IAS — civil services coaching from school foundation to UPSC/KPSC, across Karnataka.')));
+    // Google Analytics Measurement ID — admin-editable (Settings → site.ga_id); blank disables tracking.
+    $gaId     = trim((string) Setting::get('site.ga_id', 'G-TDYG1WK6KY'));
     // Built in PHP (not @json) so the @-prefixed schema.org keys aren't parsed as Blade directives.
     // Language switcher / hreflang: build raw URLs (bypassing the locale path
     // formatter) for the current page in each language.
@@ -50,6 +52,18 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    {{-- Google Analytics (gtag.js) --}}
+    @if ($gaId)
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '{{ $gaId }}');
+        </script>
+    @endif
+
     <title>@yield('title', 'Samutkarsh IAS Academy')</title>
 
     {{-- Favicons --}}
