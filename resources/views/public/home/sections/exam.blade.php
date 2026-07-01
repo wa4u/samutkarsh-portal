@@ -47,6 +47,9 @@
                         <p class="text-xs font-semibold uppercase tracking-wide text-brand-600">Centre</p>
                         <p class="mt-1 text-lg font-extrabold text-slate-900">{{ is_array($centre) ? ($centre['name'] ?? '') : '' }}</p>
                         <p class="mt-3 text-lg font-bold text-brand-700">{{ is_array($centre) ? ($centre['dates'] ?? '') : '' }}</p>
+                        @if ($regOpen)
+                            <a href="{{ route('public.register.create') }}" class="mt-4 inline-flex items-center rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-brand-700 transition">Register now</a>
+                        @endif
                     </div>
                 @endforeach
             </div>
