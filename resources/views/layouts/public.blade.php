@@ -20,7 +20,7 @@
     ]));
     $seoDesc  = trim(strip_tags((string) Setting::get('site.hero_subtitle', 'Nation Building through IAS — civil services coaching from school foundation to UPSC/KPSC, across Karnataka.')));
     // Google Analytics Measurement ID — admin-editable (Settings → site.ga_id); blank disables tracking.
-    $gaId     = trim((string) Setting::get('site.ga_id', 'G-TDYG1WK6KY'));
+    $gaId     = trim((string) Setting::get('site.ga_id', 'G-P1PBFZVXMZ'));
     // Built in PHP (not @json) so the @-prefixed schema.org keys aren't parsed as Blade directives.
     // Language switcher / hreflang: build raw URLs (bypassing the locale path
     // formatter) for the current page in each language.

@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Setting::firstOrCreate(
             ['key' => 'site.ga_id'],
-            ['value' => 'G-TDYG1WK6KY', 'type' => 'text', 'group' => 'site'],
+            ['value' => 'G-P1PBFZVXMZ', 'type' => 'text', 'group' => 'site'],
         );
     }
 
