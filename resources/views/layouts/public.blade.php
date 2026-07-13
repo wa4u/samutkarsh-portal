@@ -279,10 +279,17 @@
                 </div>
             </div>
         </div>
+        @php
+            // Footer copyright/note accept limited, safe HTML (e.g. a credit link).
+            // strip_tags keeps only these tags — blocks <script>/<iframe>/etc.
+            $footerAllowed   = '<a><strong><em><b><i><u><br><span>';
+            $footerCopyright = Setting::get('footer.copyright', 'Samutkarsh IAS Academy. All rights reserved.');
+            $footerNote      = Setting::get('footer.note', 'Admissions ' . config('admissions.academic_year'));
+        @endphp
         <div class="border-t border-white/10">
-            <div class="mx-auto max-w-6xl px-4 py-5 text-xs text-slate-400 flex flex-col sm:flex-row justify-between gap-2">
-                <span>&copy; {{ date('Y') }} {{ Setting::get('footer.copyright', 'Samutkarsh IAS Academy. All rights reserved.') }}</span>
-                <span>{{ Setting::get('footer.note', 'Admissions ' . config('admissions.academic_year')) }}</span>
+            <div class="mx-auto max-w-6xl px-4 py-5 text-xs text-slate-400 flex flex-col sm:flex-row justify-between gap-2 [&_a]:font-medium [&_a]:text-slate-200 [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:text-white">
+                <span>&copy; {{ date('Y') }} {!! strip_tags($footerCopyright, $footerAllowed) !!}</span>
+                <span>{!! strip_tags($footerNote, $footerAllowed) !!}</span>
             </div>
         </div>
     </footer>
