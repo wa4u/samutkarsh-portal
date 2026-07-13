@@ -86,6 +86,8 @@ class HomeSectionResource extends Resource
                 ->helperText('Optional. Paste a YouTube link or an .mp4 URL — plays muted & looped. For MP4 the image above is the poster.'),
             Forms\Components\TextInput::make('content.cta_explore')->label('“Explore” button label')->visible(self::forKeys('hero')),
             Forms\Components\TextInput::make('content.cta_status')->label('“Check status” button label')->visible(self::forKeys('hero')),
+            Forms\Components\Toggle::make('content.show_register')->label('Show “Register” button')->default(true)->visible(self::forKeys('hero')),
+            Forms\Components\Toggle::make('content.show_status')->label('Show “Check status” button')->default(true)->visible(self::forKeys('hero')),
 
             // Register button label (hero + closing CTA both have one)
             Forms\Components\TextInput::make('content.cta_primary')->label('Register button label')->visible(self::forKeys('hero', 'cta')),

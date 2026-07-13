@@ -121,26 +121,6 @@
                     </a>
                 @endif
             </div>
-            <div class="flex items-center gap-3 shrink-0">
-                {{-- Language switcher --}}
-                <div class="relative group">
-                    <button class="inline-flex items-center gap-1 hover:text-white" aria-label="Change language">
-                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5h12M9 3v2m3.5 13 4.5-9 4.5 9M5 8c0 4 2.5 7 6 8M9 12c2 2 4 3 6 3"/></svg>
-                        <span>{{ $langLabels[$curLocale] ?? 'English' }}</span>
-                        <svg class="h-3 w-3 opacity-70" viewBox="0 0 20 20" fill="currentColor"><path d="M5.5 7.5 10 12l4.5-4.5z"/></svg>
-                    </button>
-                    <div class="absolute right-0 top-full hidden group-hover:block pt-2 w-36 z-50">
-                        <div class="rounded-lg bg-white py-1 shadow-xl ring-1 ring-slate-200 text-slate-700">
-                            @foreach ($langLabels as $lc => $label)
-                                <a href="{{ $langUrls[$lc] }}"
-                                   class="block px-3 py-2 text-sm hover:bg-brand-50 hover:text-brand-700 {{ $curLocale === $lc ? 'font-bold text-brand-700' : '' }}">{{ $label }}</a>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-                <span class="text-white/30">|</span>
-                <a href="{{ route('public.result.form') }}" class="hover:text-white">Check result</a>
-            </div>
         </div>
     </div>
 

@@ -15,6 +15,9 @@
     $ctaPrimary = $c['cta_primary'] ?? 'Register now';
     $ctaExplore = $c['cta_explore'] ?? 'Explore programmes';
     $ctaStatus  = $c['cta_status']  ?? 'Check admission status';
+    // Admin can hide individual hero buttons (default: shown).
+    $showHeroRegister = $c['show_register'] ?? true;
+    $showHeroStatus   = $c['show_status'] ?? true;
 @endphp
 
 {{-- Hero. Background priority: YouTube → MP4 → image → saffron gradient. --}}
@@ -58,14 +61,16 @@
                 <strong class="font-semibold text-white">{{ $regOpen ? 'open' : 'closed' }}</strong> across all Samutkarsh centres.
             </p>
             <div class="mt-8 flex flex-wrap gap-3">
-                @if ($regOpen)
+                @if ($regOpen && $showHeroRegister)
                     <a href="{{ route('public.register.create') }}"
                        class="rounded-lg bg-white px-6 py-3 font-bold text-brand-700 shadow-sm hover:bg-brand-50 transition">{{ $ctaPrimary }}</a>
                 @endif
                 <a href="#programmes"
                    class="rounded-lg bg-ink-800 px-6 py-3 font-bold text-white shadow-sm hover:bg-ink-900 transition">{{ $ctaExplore }}</a>
-                <a href="{{ route('public.result.form') }}"
-                   class="rounded-lg border border-white/40 px-6 py-3 font-bold text-white hover:bg-white/10 transition">{{ $ctaStatus }}</a>
+                @if ($showHeroStatus)
+                    <a href="{{ route('public.result.form') }}"
+                       class="rounded-lg border border-white/40 px-6 py-3 font-bold text-white hover:bg-white/10 transition">{{ $ctaStatus }}</a>
+                @endif
             </div>
         </div>
     </div>

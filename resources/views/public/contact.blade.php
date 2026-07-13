@@ -72,24 +72,29 @@
             {{-- Inquiry form --}}
             <form method="POST" action="{{ route('public.contact.store') }}" class="rounded-xl bg-white p-6 ring-1 ring-slate-200 space-y-4">
                 @csrf
+                {{-- Honeypot: hidden from humans; bots that fill it are silently dropped. --}}
+                <div class="hidden" aria-hidden="true">
+                    <label>Leave this field empty</label>
+                    <input type="text" name="website" tabindex="-1" autocomplete="off">
+                </div>
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div>
                         <label class="block text-sm font-medium text-slate-700">Name <span class="text-red-500">*</span></label>
-                        <input type="text" name="name" value="{{ old('name') }}" required class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
+                        <input type="text" name="name" value="{{ old('name') }}" required class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700">Mobile <span class="text-red-500">*</span></label>
-                        <input type="tel" name="phone" value="{{ old('phone') }}" required inputmode="numeric" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
+                        <input type="tel" name="phone" value="{{ old('phone') }}" required inputmode="numeric" class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                     </div>
                 </div>
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div>
                         <label class="block text-sm font-medium text-slate-700">Email</label>
-                        <input type="email" name="email" value="{{ old('email') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
+                        <input type="email" name="email" value="{{ old('email') }}" class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700">Interested center</label>
-                        <select name="center_id" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
+                        <select name="center_id" class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                             <option value="">— Any / not sure —</option>
                             @foreach ($centers as $center)
                                 <option value="{{ $center->id }}" @selected(old('center_id') == $center->id)>{{ $center->name }}</option>
@@ -99,11 +104,11 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700">Subject</label>
-                    <input type="text" name="subject" value="{{ old('subject') }}" class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
+                    <input type="text" name="subject" value="{{ old('subject') }}" class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700">Message <span class="text-red-500">*</span></label>
-                    <textarea name="message" rows="4" required class="mt-1 w-full rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">{{ old('message') }}</textarea>
+                    <textarea name="message" rows="4" required class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">{{ old('message') }}</textarea>
                 </div>
                 <button type="submit" class="w-full rounded-lg bg-indigo-600 px-4 py-3 font-semibold text-white hover:bg-indigo-700">Send message</button>
             </form>

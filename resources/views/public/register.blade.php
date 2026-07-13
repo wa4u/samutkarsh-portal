@@ -23,7 +23,7 @@
             <div>
                 <label class="block text-sm font-medium text-slate-700">Center <span class="text-red-500">*</span></label>
                 <select name="center_id" required
-                        class="mt-1 w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                     <option value="">— Select your center —</option>
                     @foreach ($centers as $center)
                         <option value="{{ $center->id }}" @selected(old('center_id') == $center->id)>
@@ -37,13 +37,13 @@
                 <div>
                     <label class="block text-sm font-medium text-slate-700">Full name <span class="text-red-500">*</span></label>
                     <input type="text" name="name" value="{{ old('name') }}" required
-                           class="mt-1 w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                           class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700">Mobile number <span class="text-red-500">*</span></label>
                     <input type="tel" name="phone" value="{{ old('phone') }}" required inputmode="numeric"
                            placeholder="10-digit mobile"
-                           class="mt-1 w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                           class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                 </div>
             </div>
 
@@ -51,12 +51,12 @@
                 <div>
                     <label class="block text-sm font-medium text-slate-700">Email</label>
                     <input type="email" name="email" value="{{ old('email') }}"
-                           class="mt-1 w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                           class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700">Date of birth</label>
                     <input type="date" name="dob" value="{{ old('dob') }}"
-                           class="mt-1 w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                           class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                 </div>
             </div>
 
@@ -64,7 +64,7 @@
                 <div>
                     <label class="block text-sm font-medium text-slate-700">Class <span class="text-red-500">*</span></label>
                     <select name="student_class" required
-                            class="mt-1 w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                         <option value="">— Select class —</option>
                         @foreach (\App\Models\Student::CLASSES as $v => $l)
                             <option value="{{ $v }}" @selected(old('student_class') === $v)>{{ $l }}</option>
@@ -74,7 +74,7 @@
                 <div>
                     <label class="block text-sm font-medium text-slate-700">Gender</label>
                     <select name="gender"
-                            class="mt-1 w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                         <option value="">— Select —</option>
                         @foreach (['male' => 'Male', 'female' => 'Female', 'other' => 'Other'] as $v => $l)
                             <option value="{{ $v }}" @selected(old('gender') === $v)>{{ $l }}</option>
@@ -86,7 +86,7 @@
             <div>
                 <label class="block text-sm font-medium text-slate-700">School / College name</label>
                 <input type="text" name="school_name" value="{{ old('school_name') }}"
-                       class="mt-1 w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                       class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
             </div>
 
             <button type="submit"
