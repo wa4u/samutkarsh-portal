@@ -58,11 +58,11 @@ class HomeSectionResource extends Resource
 
             // Shared text
             Forms\Components\TextInput::make('content.heading')->label('Heading')
-                ->visible(self::forKeys('why', 'programmes', 'cta', 'blog', 'testimonials', 'exam')),
+                ->visible(self::forKeys('why', 'programmes', 'cta', 'blog', 'testimonials', 'exam', 'achievers')),
             Forms\Components\Textarea::make('content.body')->label('Paragraph / text')->rows(4)
                 ->visible(self::forKeys('why', 'cta')),
             Forms\Components\Textarea::make('content.intro')->label('Intro')->rows(2)
-                ->visible(self::forKeys('programmes', 'testimonials', 'exam')),
+                ->visible(self::forKeys('programmes', 'testimonials', 'exam', 'achievers')),
 
             // Exam schedule banner
             Forms\Components\TextInput::make('content.reporting')->label('Reporting time')->visible(self::forKeys('exam'))

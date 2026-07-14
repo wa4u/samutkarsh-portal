@@ -4,6 +4,7 @@ use App\Http\Controllers\InstallController;
 use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\Public\BlogController;
 use App\Http\Controllers\Public\CheckoutController;
+use App\Http\Controllers\Public\AchieverController;
 use App\Http\Controllers\Public\ActivityController;
 use App\Http\Controllers\Public\ContactController;
 use App\Http\Controllers\Public\GalleryController;
@@ -17,7 +18,7 @@ use App\Http\Middleware\SetLocale;
 use Illuminate\Support\Facades\Route;
 
 // Single-segment slugs the CMS page catch-all must never claim.
-$reserved = '^(?!admin|blog|gallery|register|result|checkout|payments|__setup|up|storage|sitemap|robots|hi|kn).*$';
+$reserved = '^(?!admin|blog|gallery|achievers|register|result|checkout|payments|__setup|up|storage|sitemap|robots|hi|kn).*$';
 
 /*
  | Public content + admission funnel. Defined once, then registered twice:
@@ -49,6 +50,11 @@ $publicRoutes = function () {
     Route::controller(GalleryController::class)->group(function () {
         Route::get('/gallery', 'index')->name('public.gallery.index');
         Route::get('/gallery/{gallery:slug}', 'show')->name('public.gallery.show');
+    });
+
+    Route::controller(AchieverController::class)->group(function () {
+        Route::get('/achievers', 'index')->name('public.achievers.index');
+        Route::get('/achievers/{achiever:slug}', 'show')->name('public.achievers.show');
     });
 
     Route::get('/testimonials', [TestimonialController::class, 'index'])->name('public.testimonials');

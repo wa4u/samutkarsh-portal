@@ -69,18 +69,19 @@ class SiteSeeder extends Seeder
         $child($courses, 'Short Programs', 5, 'page', 'short-programs');
 
         $top('Results & Achievements', 3, 'page', 'results-achievements');
+        $top('Achievers', 4, 'route', 'public.achievers.index');
 
-        $about = $top('About Us', 4);
+        $about = $top('About Us', 5);
         $child($about, 'Samutkarsh Trust', 1, 'page', 'samutkarsh-trust');
         $child($about, 'Infrastructure & Centers', 2, 'page', 'infrastructure-centers');
 
-        $corner = $top('Student Corner', 5);
+        $corner = $top('Student Corner', 6);
         $child($corner, 'Test Schedules & Announcements', 1, 'page', 'test-schedules');
         $child($corner, 'Study Material / Prospectus', 2, 'page', 'study-material');
 
-        $top('Gallery', 6, 'route', 'public.gallery.index');
-        $top('Blog', 7, 'route', 'public.blog.index');
-        $top('Contact & Admissions', 8, 'route', 'public.contact');
+        $top('Gallery', 7, 'route', 'public.gallery.index');
+        $top('Blog', 8, 'route', 'public.blog.index');
+        $top('Contact & Admissions', 9, 'route', 'public.contact');
     }
 
     /** @return array<string,array{0:string,1:string}> */
