@@ -228,8 +228,12 @@ class RegistrationResource extends Resource
                             Forms\Components\Select::make('status')
                                 ->label('Admission result')
                                 ->options(self::$statusOptions)
-                                ->disableOptionWhen(fn (string $value) => $value === 'admitted')
+                                ->live()
                                 ->required(),
+                            Forms\Components\Placeholder::make('admitted_warning')
+                                ->label('')
+                                ->content('Note: bulk-admitting sets the status directly WITHOUT creating a payment record. Use Record Payment on individual rows if a fee was collected.')
+                                ->visible(fn (Forms\Get $get) => $get('status') === 'admitted'),
                             Forms\Components\Toggle::make('notify_student')
                                 ->label('Email each student about this result')
                                 ->helperText('Sends only for Selected / Admitted / Not Selected, and only if the student has an email on file.')
@@ -256,7 +260,7 @@ class RegistrationResource extends Resource
 
                             Notification::make()
                                 ->title("Status updated for {$updated} registration(s)")
-                                ->body($skipped > 0 ? "{$skipped} admitted registration(s) were skipped — that status is set only by a verified payment." : null)
+                                ->body($skipped > 0 ? "{$skipped} already-admitted registration(s) were left unchanged." : null)
                                 ->success()
                                 ->send();
                         })
