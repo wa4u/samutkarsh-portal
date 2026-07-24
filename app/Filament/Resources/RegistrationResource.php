@@ -218,6 +218,50 @@ class RegistrationResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    // Bulk result entry — same rules as the per-row Set Result action:
+                    // permission-gated, and never touches webhook-owned 'admitted' rows.
+                    Tables\Actions\BulkAction::make('updateStatus')
+                        ->label('Update status')
+                        ->icon('heroicon-o-pencil-square')
+                        ->visible(fn () => auth()->user()?->can('score_registration'))
+                        ->form([
+                            Forms\Components\Select::make('status')
+                                ->label('Admission result')
+                                ->options(self::$statusOptions)
+                                ->disableOptionWhen(fn (string $value) => $value === 'admitted')
+                                ->required(),
+                            Forms\Components\Toggle::make('notify_student')
+                                ->label('Email each student about this result')
+                                ->helperText('Sends only for Selected / Admitted / Not Selected, and only if the student has an email on file.')
+                                ->default(false),
+                        ])
+                        ->action(function (\Illuminate\Support\Collection $records, array $data): void {
+                            $notify = (bool) ($data['notify_student'] ?? false);
+                            $updated = 0;
+                            $skipped = 0;
+
+                            foreach ($records as $record) {
+                                if ($record->status === 'admitted') {
+                                    $skipped++;
+                                    continue;
+                                }
+
+                                $record->update(['status' => $data['status']]);
+                                $updated++;
+
+                                if ($notify) {
+                                    app(StudentNotifier::class)->notifyStatus($record->refresh());
+                                }
+                            }
+
+                            Notification::make()
+                                ->title("Status updated for {$updated} registration(s)")
+                                ->body($skipped > 0 ? "{$skipped} admitted registration(s) were skipped — that status is set only by a verified payment." : null)
+                                ->success()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
+
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
