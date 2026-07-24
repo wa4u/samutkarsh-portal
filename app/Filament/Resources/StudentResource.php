@@ -4,9 +4,12 @@ namespace App\Filament\Resources;
 
 use App\Filament\Concerns\ScopesToCenter;
 use App\Filament\Resources\StudentResource\Pages;
+use App\Mail\TemplatedStudentMail;
 use App\Models\Center;
 use App\Models\Student;
 use App\Services\ImageProcessor;
+use App\Support\MailTemplate;
+use Illuminate\Support\Facades\Mail;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -132,6 +135,12 @@ class StudentResource extends Resource
                 Tables\Filters\SelectFilter::make('student_class')
                     ->label('Class')
                     ->options(Student::CLASSES),
+                Tables\Filters\Filter::make('birthday_today')
+                    ->label('Birthday today')
+                    ->toggle()
+                    ->query(fn ($query) => $query
+                        ->whereMonth('dob', now()->month)
+                        ->whereDay('dob', now()->day)),
             ])
             ->headerActions([
                 Tables\Actions\Action::make('export')
@@ -163,10 +172,58 @@ class StudentResource extends Resource
                     )),
             ])
             ->actions([
+                // Opens WhatsApp (wa.me) with the birthday template pre-filled;
+                // the admin just hits Send in WhatsApp. No API, nothing automatic.
+                Tables\Actions\Action::make('birthdayWhatsapp')
+                    ->label('WhatsApp')
+                    ->icon('heroicon-o-chat-bubble-left-ellipsis')
+                    ->color('success')
+                    ->visible(fn (Student $record) => filled($record->phone))
+                    ->url(function (Student $record): string {
+                        $text = MailTemplate::text('mail.birthday_whatsapp', MailTemplate::studentTokens($record));
+                        $phone = preg_replace('/\D+/', '', $record->phone);
+                        if (strlen($phone) === 10) {
+                            $phone = '91' . $phone;   // Indian numbers need the country code for wa.me
+                        }
+
+                        return 'https://wa.me/' . $phone . '?text=' . rawurlencode($text);
+                    }, shouldOpenInNewTab: true),
+
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('sendBirthdayEmail')
+                        ->label('Send birthday email')
+                        ->icon('heroicon-o-cake')
+                        ->requiresConfirmation()
+                        ->modalDescription('Sends the birthday email template to every selected student who has an email on file.')
+                        ->action(function (\Illuminate\Support\Collection $records): void {
+                            $sent = 0;
+                            $skipped = 0;
+
+                            foreach ($records as $student) {
+                                if (empty($student->email)) {
+                                    $skipped++;
+                                    continue;
+                                }
+
+                                $tokens = MailTemplate::studentTokens($student);
+                                Mail::to($student->email)->send(new TemplatedStudentMail(
+                                    MailTemplate::subject('mail.birthday_subject', $tokens),
+                                    MailTemplate::body('mail.birthday_body', $tokens),
+                                ));
+                                $sent++;
+                            }
+
+                            \Filament\Notifications\Notification::make()
+                                ->title("Birthday email sent to {$sent} student(s)")
+                                ->body($skipped > 0 ? "{$skipped} student(s) skipped — no email on file." : null)
+                                ->success()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
+
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);

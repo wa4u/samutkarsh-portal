@@ -47,6 +47,12 @@ class EmailTemplates extends Page implements HasForms
             'student_body'    => Setting::get('mail.student_body', MailTemplate::DEFAULTS['mail.student_body']),
             'admin_subject'   => Setting::get('mail.admin_subject', MailTemplate::DEFAULTS['mail.admin_subject']),
             'admin_body'      => Setting::get('mail.admin_body', MailTemplate::DEFAULTS['mail.admin_body']),
+            'reminder_subject' => Setting::get('mail.reminder_subject', MailTemplate::DEFAULTS['mail.reminder_subject']),
+            'reminder_body'    => Setting::get('mail.reminder_body', MailTemplate::DEFAULTS['mail.reminder_body']),
+            'birthday_subject' => Setting::get('mail.birthday_subject', MailTemplate::DEFAULTS['mail.birthday_subject']),
+            'birthday_body'    => Setting::get('mail.birthday_body', MailTemplate::DEFAULTS['mail.birthday_body']),
+            'birthday_whatsapp' => Setting::get('mail.birthday_whatsapp', MailTemplate::DEFAULTS['mail.birthday_whatsapp']),
+            'birthday_auto'     => filter_var(Setting::get('mail.birthday_auto', '0'), FILTER_VALIDATE_BOOLEAN),
         ]);
     }
 
@@ -76,6 +82,27 @@ class EmailTemplates extends Page implements HasForms
                         Forms\Components\TextInput::make('admin_subject')->label('Subject')->required(),
                         ContentEditor::make('admin_body')->label('Body'),
                     ]),
+
+                Forms\Components\Section::make('Reminder email')
+                    ->description('Used by the Send Reminder page — sent on demand to all students (or one centre).')
+                    ->schema([
+                        Forms\Components\TextInput::make('reminder_subject')->label('Subject')->required(),
+                        ContentEditor::make('reminder_body')->label('Body'),
+                    ]),
+
+                Forms\Components\Section::make('Birthday greeting')
+                    ->description('Email sent to students on their birthday; the WhatsApp text opens pre-filled when you click the WhatsApp button on the Students list.')
+                    ->schema([
+                        Forms\Components\TextInput::make('birthday_subject')->label('Email subject')->required(),
+                        ContentEditor::make('birthday_body')->label('Email body'),
+                        Forms\Components\Textarea::make('birthday_whatsapp')
+                            ->label('WhatsApp message (plain text)')
+                            ->rows(3)
+                            ->helperText('Same placeholders work here, e.g. {student_name}, {centre}.'),
+                        Forms\Components\Toggle::make('birthday_auto')
+                            ->label('Send birthday emails automatically every morning')
+                            ->helperText('When on, students whose birthday is today receive the email at 8:00 AM without any manual step.'),
+                    ]),
             ])
             ->statePath('data');
     }
@@ -89,6 +116,11 @@ class EmailTemplates extends Page implements HasForms
             'mail.student_body'    => ['student_body', 'html'],
             'mail.admin_subject'   => ['admin_subject', 'text'],
             'mail.admin_body'      => ['admin_body', 'html'],
+            'mail.reminder_subject' => ['reminder_subject', 'text'],
+            'mail.reminder_body'    => ['reminder_body', 'html'],
+            'mail.birthday_subject' => ['birthday_subject', 'text'],
+            'mail.birthday_body'    => ['birthday_body', 'html'],
+            'mail.birthday_whatsapp' => ['birthday_whatsapp', 'text'],
         ];
 
         foreach ($map as $key => [$field, $type]) {
@@ -97,6 +129,11 @@ class EmailTemplates extends Page implements HasForms
                 ['value' => $data[$field] ?? '', 'type' => $type, 'group' => 'mail'],
             );
         }
+
+        Setting::updateOrCreate(
+            ['key' => 'mail.birthday_auto'],
+            ['value' => ($data['birthday_auto'] ?? false) ? '1' : '0', 'type' => 'boolean', 'group' => 'mail'],
+        );
 
         Notification::make()->title('Email templates saved')->success()->send();
     }

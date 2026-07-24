@@ -33,6 +33,20 @@ class MailTemplate
             . '<li><strong>Email:</strong> {email}</li>'
             . '</ul>'
             . '<p><a href="{admin_url}">Open in admin</a></p>',
+
+        'mail.reminder_subject' => 'Reminder from Samutkarsh IAS Academy',
+        'mail.reminder_body'    => '<p>Dear {student_name},</p>'
+            . '<p>This is a gentle reminder from <strong>Samutkarsh IAS Academy, {centre}</strong>.</p>'
+            . '<p>Warm regards,<br>Samutkarsh IAS Academy</p>',
+
+        'mail.birthday_subject' => 'Happy Birthday, {student_name}!',
+        'mail.birthday_body'    => '<p>Dear {student_name},</p>'
+            . '<p>Wishing you a very <strong>Happy Birthday</strong> from all of us at Samutkarsh IAS Academy, {centre}! '
+            . 'May the year ahead bring you success, good health, and the strength to achieve your dreams.</p>'
+            . '<p>Warm wishes,<br>Samutkarsh IAS Academy</p>',
+
+        // Plain text — opened in WhatsApp via a click-to-chat (wa.me) link.
+        'mail.birthday_whatsapp' => 'Dear {student_name}, wishing you a very Happy Birthday from all of us at Samutkarsh IAS Academy, {centre}! May the year ahead bring you success and good health.',
     ];
 
     /** Placeholders shown to admins on the Email Templates page. */
@@ -67,6 +81,21 @@ class MailTemplate
     public static function body(string $key, array $tokens): string
     {
         return strtr(self::value($key), $tokens);
+    }
+
+    /**
+     * Tokens for student-centric mails (reminder, birthday) where there is no
+     * registration context — centre comes from the student, year is current.
+     */
+    public static function studentTokens(Student $student): array
+    {
+        return self::tokens($student, $student->center ?? new Center(['name' => 'Samutkarsh IAS Academy']), (string) now()->year);
+    }
+
+    /** Plain-text template with tokens substituted (for WhatsApp click-to-chat). */
+    public static function text(string $key, array $tokens): string
+    {
+        return trim(strip_tags(strtr(self::value($key), $tokens)));
     }
 
     private static function value(string $key): string

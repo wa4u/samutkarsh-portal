@@ -15,3 +15,7 @@ Schedule::command('backup:run')->daily()->at('01:30');
 
 // Optional: alert if the latest backup is missing/too old/too large.
 Schedule::command('backup:monitor')->daily()->at('02:00');
+
+// Birthday emails — the command itself no-ops unless the admin has switched
+// on 'mail.birthday_auto' (Email Templates page), so scheduling it is safe.
+Schedule::command('students:send-birthday-greetings')->daily()->at('08:00');
